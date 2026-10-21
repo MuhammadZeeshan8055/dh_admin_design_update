@@ -1,11 +1,26 @@
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('dhothar-theme');
+    if (t !== 'light' && t !== 'dark') {
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+<!-- Sidebar interactions must load with the sidebar, including pages without the shared header. -->
+<script src="assets/js/dhothar-theme.js" defer></script>
 <?php
 if (!isset($_SESSION['country'])) {
    $_SESSION['country'] = 'Romania';
 }
 
-// Get the current URL
-$currentURL = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$fileName = basename($currentURL, "");
+// Use the executing script name so query strings and optional .php URLs do not
+// break the persistent active state of sidebar items.
+$fileName = pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME);
 
 include('database/db_connection.php');
 
@@ -44,11 +59,13 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
             <img src="dhothar_logo.png" width="120" alt />
          </a>
       </div>
+      <!-- Desktop sidebar collapse is temporarily disabled until the collapsed layout is refined.
       <div class="sidebar-collapse">
          <a href="#" class="sidebar-collapse-icon">
             <i class="entypo-menu"></i>
          </a>
       </div>
+      -->
       <div class="sidebar-mobile-menu visible-xs">
          <a href="#" class="with-animation">
             <i class="entypo-menu"></i>
@@ -57,10 +74,18 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
    </header>
 
    <ul id="main-menu" class="main-menu">
+      <!-- Dashboard -->
+      <li class="<?= isActive($fileName, ['index', '/']) ? 'active opened active' : 'opened' ?>">
+         <a href="index?country=<?= $_SESSION['country'] ?>">
+            <i class="entypo-chart-pie"></i>
+            <span class="title">Dashboard</span>
+         </a>
+      </li>
+
       <!-- Attendance Menu -->
       <li class="<?= isParentActive($fileName, $attendancePages) ?>">
          <a href="attendance_dashboard">
-            <i class="entypo-window"></i>
+            <i class="entypo-calendar"></i>
             <span class="title">Attendance</span>
          </a>
          <ul class="">
@@ -120,14 +145,6 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
          </ul>
       </li>
 
-      <!-- Dashboard -->
-      <li class="<?= isActive($fileName, ['index', '/']) ? 'active opened active' : 'opened' ?>">
-         <a href="index?country=<?= $_SESSION['country'] ?>">
-            <i class="entypo-gauge"></i>
-            <span class="title">Dashboard</span>
-         </a>
-      </li>
-
       <!-- Daily Visitors -->
       <li class="<?= isActive($fileName, 'daily_visitors') ? 'active opened active' : 'visible' ?>">
          <a href="daily_visitors">
@@ -139,7 +156,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- New Cases Menu -->
       <li class="<?= isParentActive($fileName, $newCasesPages) ?>">
          <a href="#">
-            <i class="entypo-window"></i>
+            <i class="entypo-folder"></i>
             <span class="title">New Cases</span>
          </a>
          <ul class="">
@@ -182,7 +199,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
 
       <li class="<?= isActive($fileName, 'new_case_audit_history') ?>">
          <a href="new_case_audit_history">
-            <i class="entypo-mail"></i>
+            <i class="entypo-back-in-time"></i>
             <span class="title">New Case Audit History
                <?= !empty($new_case_details_history['pending_new_case_details_history']) ? '(' . $new_case_details_history['pending_new_case_details_history'] . ')' : '' ?>
             </span>
@@ -194,7 +211,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Country -->
       <li class="<?= isActive($fileName, 'country') ? 'active opened active' : 'visible' ?>">
          <a href="country">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-globe"></i>
             <span class="title">Country</span>
          </a>
       </li>
@@ -202,7 +219,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Care Off List -->
       <li class="<?= isActive($fileName, 'care_off') ? 'active opened active' : 'visible' ?>">
          <a href="care_off">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-list"></i>
             <span class="title">Care Off List</span>
          </a>
       </li>
@@ -210,7 +227,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Company List -->
       <li class="<?= isActive($fileName, 'company_list') ? 'active opened active' : 'visible' ?>">
          <a href="company_list">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-briefcase"></i>
             <span class="title">Company List</span>
          </a>
       </li>
@@ -218,7 +235,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Trade -->
       <li class="<?= isActive($fileName, 'trade') ? 'active opened active' : 'visible' ?>">
          <a href="trade">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-flow-tree"></i>
             <span class="title">Trade</span>
          </a>
       </li>
@@ -226,7 +243,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- New Jobs -->
       <li class="<?= isActive($fileName, 'new_jobs') ? 'active opened active' : 'visible' ?>">
          <a href="new_jobs">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-suitcase"></i>
             <span class="title">New Jobs</span>
          </a>
       </li>
@@ -234,7 +251,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Ledger -->
       <li class="<?= isActive($fileName, 'ledger') ? 'active opened active' : 'visible' ?>">
          <a href="ledger">
-            <i class="entypo-gauge"></i>
+            <i class="entypo-book-open"></i>
             <span class="title">Ledger</span>
          </a>
       </li>
@@ -242,7 +259,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <!-- Protector Menu -->
       <li class="<?= isParentActive($fileName, $protectorPages) ?>">
          <a href="protector">
-            <i class="entypo-window"></i>
+            <i class="entypo-lock"></i>
             <span class="title">Protector</span>
          </a>
          <ul class="">
@@ -270,7 +287,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <?php if ($manage_petty_cash == 'on'): ?>
          <li class="<?= isActive($fileName, 'petty_cash') ? 'active opened active' : 'opened' ?>">
             <a href="petty_cash">
-               <i class="entypo-gauge"></i>
+               <i class="entypo-credit-card"></i>
                <span class="title">Petty Cash</span>
             </a>
          </li>
@@ -280,10 +297,10 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <?php if ($userrole == 'Super Admin'): ?>
          <li class="<?= isActive($fileName, 'notifications') ? 'active opened active' : 'opened' ?>">
             <a href="notifications">
-               <i class="entypo-mail"></i>
+               <i class="entypo-bell"></i>
                <span class="title">Notifications</span>
                <?php if ($fileName == 'notifications'):
-                  $check = mysqli_fetch_assoc(mysqli_query($conn, "select count(expense_id) as entries_check from expenses where expense>=5000 and status='Pending'"));
+                  $check = mysqli_fetch_assoc(mysqli_query($con, "select count(expense_id) as entries_check from expenses where expense>=5000 and status='Pending'"));
                   ?>
                   <span class="badge badge-secondary"><?= $check['entries_check'] ?></span>
                <?php endif; ?>
@@ -295,7 +312,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
 
          <li class="<?= isActive($fileName, 'account_history') ?>">
             <a href="account_history">
-               <i class="entypo-mail"></i>
+               <i class="entypo-clipboard"></i>
                <span class="title">Account Audit History
                   <?= !empty($account_history['pending_account_history']) ? '(' . $account_history['pending_account_history'] . ')' : '' ?>
                </span>
@@ -308,7 +325,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <?php if ($manage_accounts == 'on'): ?>
          <li class="<?= isParentActive($fileName, $accountsPages) ?>">
             <a href="accounts">
-               <i class="entypo-window"></i>
+               <i class="entypo-database"></i>
                <span class="title">Accounts</span>
             </a>
             <ul class="">
@@ -357,7 +374,7 @@ $accountsPages = ['clients_list', 'accounts', 'account_analysis_search', 'accoun
       <?php if ($userrole == 'Super Admin'): ?>
          <li class="<?= isActive($fileName, 'users') ? 'active opened active' : 'opened' ?>">
             <a href="users">
-               <i class="entypo-gauge"></i>
+               <i class="entypo-users"></i>
                <span class="title">Users</span>
             </a>
          </li>

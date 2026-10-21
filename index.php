@@ -59,39 +59,14 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
       <title>Dhothar International | Dashboard</title>
       <link rel="stylesheet" href="assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css" id="style-resource-1">
       <link rel="stylesheet" href="assets/css/font-icons/entypo/css/entypo.css" id="style-resource-2">
-      <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic" id="style-resource-3">
       <link rel="stylesheet" href="assets/css/bootstrap.css" id="style-resource-4">
+      <!-- neon-core kept for sidebar layout/scripts compatibility; visual theme is dhothar-theme via custom.css -->
       <link rel="stylesheet" href="assets/css/neon-core.css" id="style-resource-5">
-      <link rel="stylesheet" href="assets/css/neon-theme.css" id="style-resource-6">
-      <link rel="stylesheet" href="assets/css/neon-forms.css" id="style-resource-7">
       <link rel="stylesheet" href="assets/css/custom.css" id="style-resource-8">
-      <style>
-            .card.radius-10.overflow-hidden.w-100 {
-               padding: 10px 10px 10px 10px;
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-red{
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-aqua {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-blue {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-             .tile-stats.tile-green {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-               .table-1{
-               width: 100%;
-            }
-            .table-2{
-               width: 100%;
-            }
-      </style>
+      <?php include('components/theme_head.php'); ?>
       <script src="assets/js/jquery-1.11.3.min.js"></script> 
    </head>
-   <body class="">
+   <body class="dh-dashboard">
       <div class="page-container">
          <div class="sidebar-menu">
             <?php include('components/sidebar.php'); ?>
@@ -100,13 +75,19 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
 
            <?php include('components/header.php'); ?>
 
-            <hr/>
+            <div class="dh-dash-welcome dh-animate">
+               <div>
+                  <span class="dh-brand">Dhothar</span>
+                  <h1>Welcome back<?php echo !empty($firstname) ? ', ' . htmlspecialchars($firstname) : ''; ?>!</h1>
+                  <p>Here’s what’s happening with your cases today — <?php echo htmlspecialchars($_SESSION['country']); ?>.</p>
+               </div>
+            </div>
 
             <?php
                if($country=='' || $country=='Romania'){
             ?>
 
-               <div class="row">
+               <div class="row dh-stat-grid dh-animate dh-animate-delay-1">
                   <div class="col-sm-4 col-xs-6">
                       <a href="total_registered_cases"> 
                         <div class="tile-stats tile-green">
@@ -153,7 +134,6 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
 
                      </a>
                   </div>
-                  <div class="clear visible-xs"></div>
                   <div class="col-sm-4 col-xs-6">
                      <a href="status_wise_data?status=Applied">
 
@@ -379,22 +359,17 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
 
                </div>
 
-               <hr>
-                 <br>
-                <br>
-                
-                	<div class="row">
+               <div class="row dh-animate dh-animate-delay-2">
         				<div class="col-12 col-lg-6 col-xl-6 d-flex" >
-    					   	<div class="card radius-10 overflow-hidden w-100">
+    					   	<div class="card radius-10 overflow-hidden w-100 dh-panel">
     						  <div class="card-body">
-    							<div class="d-flex align-items-center">
+                                 <h6 class="dh-panel-title">Quick date filter</h6>
     								 <form action="index_search" method="post">
-                    
                                           <table class="table-1">
                                                 <tr>
                                                     <td><select class='form-control' name="date"  required >
-                                            				<?php if($_POST['date']){?>
-                                            					<option value="<?= $_POST['date']; ?>"><?= $selectOption; ?></option>
+                                            				<?php if(!empty($_POST['date'])){?>
+                                            					<option value="<?= htmlspecialchars($_POST['date']); ?>"><?= htmlspecialchars($selectOption ?? $_POST['date']); ?></option>
                                             				<?php }else{ ?>
                                             					<option value=''>Select</option>
                                             				<?php } ?>
@@ -408,200 +383,161 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
                                             					<option value="<?= $alltime_date; ?>">All Time</option>
                                             				</select>
     				                                    </td>
-                                                     <td>   <input type="submit" name="date_select" value="search" id="" class="form-control">
-                                
+                                                     <td>   <input type="submit" name="date_select" value="Search" class="form-control">
                                                       </td>
                                                 </tr>
                                           </table>
-                    
-                                 
                                     </form>
-                        
-                            	</div>
                               </div>
     						</div>
     					</div>
     					
     					<div class="col-12 col-lg-6 col-xl-6 d-flex">
-    					   <div class="card radius-10 overflow-hidden w-100" >
+    					   <div class="card radius-10 overflow-hidden w-100 dh-panel" >
     						  <div class="card-body">
-    							<div class="d-flex align-items-center">
-    								 
-                     
+                                 <h6 class="dh-panel-title">Custom date range</h6>
                                              <form action="index_search" method="post">
-                                            
                                               <table class="table-2">
                                                 <tr>
                                                     <td> <input type='date' name='date1' class='form-control' value="<?= !empty($_POST['date1']) ? htmlspecialchars($_POST['date1']) : '' ?>"   />
     				                                    </td>
                                                      <td>   <input type='date' name='date2' class='form-control' value="<?= !empty($_POST['date2']) ? htmlspecialchars($_POST['date2']) : '' ?>"   />
-                                
                                                       </td>
                                                       <td>
-                                                          <input type="submit" name="date_range" value="search" id="" class="form-control">
-                                    
+                                                          <input type="submit" name="date_range" value="Search" class="form-control">
                                                       </td>
                                                 </tr>
                                           </table>
-                                          
-                                         
-                                           
-                                              <!--<input type='date' name='date1' class='form-control' value="<?= $_POST['date1']; ?>"   />-->
-                                              <!--  	<input type='date' name='date2' class='form-control' value="<?= $_POST['date2']; ?>"   />-->
-                                              <!--  <input type="submit" name="date_range" value="search" id="" class="form-control">-->
-                                    
-                                            
-                                            
-                                            
                                             </form>
-                            	</div>
                               </div>
     						</div>
     					</div>
-					
 					</div>
-                
-                
-                <br>
-                <br>
-                
-                <hr>
-                
-                
-               <div class="row">
+
+               <div class="row dh-animate dh-animate-delay-3" style="margin-top:8px">
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Date Wise Entry Graph</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                                       
-                              <canvas id="myChart" ></canvas>	
+                              <h6 class="dh-panel-title">Date Wise Entry Graph</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                  
-                                 </script>
-      
+                              </div>
                      </div>
                   </div>
                
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef;">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Status Wise Data</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                        <div>
-                           
-                           <canvas id="myChart2"></canvas>
-                        </div>
-            
+                              <h6 class="dh-panel-title">Status Wise Data</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart2"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              <script>  // === include 'setup' then 'config' above ===
-                                    Chart.defaults.color = "white";
-                                 //   Chart.defaults.backgroundcolor = "re";
-                        
-                              const ctx = document.getElementById('myChart');
-                              const ctx2 = document.getElementById('myChart2');
-
-                              const myChart = new Chart(ctx, {
-                              type: 'line',
-                              data: {
-                                 labels:  [<?php while ($c = mysqli_fetch_array($exp_date_line)) {
-                                             echo '"' . $c['entry_date'] . '",';
-                                          } ?>],
-                                    datasets: [{
-                                    label: 'Entry by Date',
-                                    data: [<?php while ($d = mysqli_fetch_array($exp_amt_line)) {
-                                             echo '"' . $d['count(id)'] . '",';
-                                          } ?>],
-                                    borderColor: [
-                                       '#adb5bd'
-                                    ],
-                                    backgroundColor: [
-                                       '#6f42c1',
-                                       '#dc3545',
-                                       '#28a745',
-                                       '#007bff',
-                                       '#ffc107',
-                                       '#20c997',
-                                       '#17a2b8',
-                                       '#fd7e14',
-                                       '#e83e8c',
-                                       '#6610f2'
-                                    ],
-                                    fill: false,
-                                    borderWidth: 2
-                                    }]
-                              },
-                              });
-
-                              const myChart2 = new Chart(ctx2, {
-                              type: 'bar',
-                              data: {
-                                 labels: [<?php while ($a = mysqli_fetch_array($exp_category_dc)) {
-                                             echo '"' . $a['status'] . '",';
-                                          } ?>],
-                              datasets: [{
-                                    label: 'Status by Category',
-                                    data: [<?php while ($b = mysqli_fetch_array($exp_amt_dc)) {
-                                             echo '"' . $b['count(id)'] . '",';
-                                          } ?>],
-                                          
-                                 
-                                          backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                            'rgba(255, 205, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(201, 203, 207, 0.2)'
-                                                         ],
-                                                         borderColor: [
-                                                            'rgb(255, 99, 132)',
-                                                            'rgb(255, 159, 64)',
-                                                            'rgb(255, 205, 86)',
-                                                            'rgb(75, 192, 192)',
-                                                            'rgb(54, 162, 235)',
-                                                            'rgb(153, 102, 255)',
-                                                            'rgb(201, 203, 207)'
-                                                         ],
-                                                         borderWidth: 1
-                                    }]
-                              },
-                              });
-                              </script>						
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              
+                              </div>
                      </div>
                   </div>
 				   </div><!--End Row-->
+               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+               <script>
+               (function () {
+                  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                  var textColor = isDark ? '#a8bdd0' : '#5a6f82';
+                  Chart.defaults.color = textColor;
+                  var ctx = document.getElementById('myChart');
+                  var ctx2 = document.getElementById('myChart2');
+                  if (!ctx || !ctx2) return;
+
+                  new Chart(ctx, {
+                     type: 'line',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_date_line, 0);
+                           while ($c = mysqli_fetch_array($exp_date_line)) {
+                              echo '"' . $c['entry_date'] . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Entry by Date',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_line, 0);
+                              while ($d = mysqli_fetch_array($exp_amt_line)) {
+                                 echo '"' . $d['count(id)'] . '",';
+                              }
+                           ?>],
+                           borderColor: '#00afeb',
+                           backgroundColor: 'rgba(86, 201, 246, 0.25)',
+                           pointBackgroundColor: '#d8ba6f',
+                           pointBorderColor: '#00afeb',
+                           fill: true,
+                           tension: 0.35,
+                           borderWidth: 2
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: { legend: { display: true } },
+                        scales: {
+                           x: { grid: { color: 'rgba(0,175,235,0.08)' } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+
+                  new Chart(ctx2, {
+                     type: 'bar',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_category_dc, 0);
+                           while ($a = mysqli_fetch_array($exp_category_dc)) {
+                              echo '"' . addslashes($a['status']) . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Status by Category',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_dc, 0);
+                              while ($b = mysqli_fetch_array($exp_amt_dc)) {
+                                 echo '"' . $b['count(id)'] . '",';
+                              }
+                           ?>],
+                           backgroundColor: [
+                              'rgba(0, 175, 235, 0.55)',
+                              'rgba(216, 186, 111, 0.65)',
+                              'rgba(86, 201, 246, 0.55)',
+                              'rgba(229, 216, 171, 0.7)',
+                              'rgba(0, 175, 235, 0.4)',
+                              'rgba(216, 186, 111, 0.45)',
+                              'rgba(86, 201, 246, 0.4)'
+                           ],
+                           borderColor: ['#00afeb', '#d8ba6f', '#56c9f6', '#e5d8ab', '#00afeb', '#d8ba6f', '#56c9f6'],
+                           borderWidth: 1,
+                           borderRadius: 6
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                           x: { grid: { display: false } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+               })();
+               </script>
 
             <?php
                }else{
             ?>
 
-               <div class="row">
+               <div class="row dh-stat-grid dh-animate dh-animate-delay-1">
                   <div class="col-sm-4 col-xs-6">
                       <a href="status_wise_data?status=Total Registered Cases"> 
                         <div class="tile-stats tile-green">
                            <div class="icon"><i class="entypo-users"></i></div>
 
                            <?php 
-                            //   $count_total_records=mysqli_fetch_assoc(mysqli_query($con,"select count(id) as total_records from new_case_details where country='$_SESSION[country]'"));
-                              
-                            //   $count_total_active=mysqli_fetch_assoc(mysqli_query($con,"select count(id) as total_active_records from new_case_details where country='$_SESSION[country]' and status !='Returned'"));
-                              
                               $query = mysqli_query($con, "
                                     SELECT 
                                         COUNT(id) AS total_records, 
@@ -613,8 +549,6 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
                                 $count_data = mysqli_fetch_assoc($query);
                                 $total_records = $count_data['total_records'];
                                 $total_active_records = $count_data['total_active_records'];
-
-                              
                            ?>
 
                            <div class="num" data-start="0" data-end="<?=$total_records;?>" data-postfix data-duration="500" data-delay="0">0</div>
@@ -638,7 +572,6 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
 
                      </a>
                   </div>
-                  <div class="clear visible-xs"></div>
                   <div class="col-sm-4 col-xs-6">
                      <a href="status_wise_data?status=Applied">
 
@@ -823,168 +756,136 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
 
                </div>
 
-               <hr>
-
-
-               <div class="row">
+               <div class="row dh-animate dh-animate-delay-3" style="margin-top:8px">
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Date Wise Entry Graph</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                                       
-                              <canvas id="myChart" ></canvas>	
+                              <h6 class="dh-panel-title">Date Wise Entry Graph</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                  
-                                 </script>
-      
+                              </div>
                      </div>
                   </div>
                
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef;">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Status Wise Data</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                        <div>
-                           
-                           <canvas id="myChart2"></canvas>
-                        </div>
-            
+                              <h6 class="dh-panel-title">Status Wise Data</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart2"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              <script>  // === include 'setup' then 'config' above ===
-                                    Chart.defaults.color = "white";
-                                 //   Chart.defaults.backgroundcolor = "re";
-                        
-                              const ctx = document.getElementById('myChart');
-                              const ctx2 = document.getElementById('myChart2');
-
-                              const myChart = new Chart(ctx, {
-                              type: 'line',
-                              data: {
-                                 labels:  [<?php while ($c = mysqli_fetch_array($exp_date_line)) {
-                                             echo '"' . $c['entry_date'] . '",';
-                                          } ?>],
-                                    datasets: [{
-                                    label: 'Expense by Date',
-                                    data: [<?php while ($d = mysqli_fetch_array($exp_amt_line)) {
-                                             echo '"' . $d['count(id)'] . '",';
-                                          } ?>],
-                                    borderColor: [
-                                       '#adb5bd'
-                                    ],
-                                    backgroundColor: [
-                                       '#6f42c1',
-                                       '#dc3545',
-                                       '#28a745',
-                                       '#007bff',
-                                       '#ffc107',
-                                       '#20c997',
-                                       '#17a2b8',
-                                       '#fd7e14',
-                                       '#e83e8c',
-                                       '#6610f2'
-                                    ],
-                                    fill: false,
-                                    borderWidth: 2
-                                    }]
-                              },
-                              });
-
-                              const myChart2 = new Chart(ctx2, {
-                              type: 'bar',
-                              data: {
-                                 labels: [<?php while ($a = mysqli_fetch_array($exp_category_dc)) {
-                                             echo '"' . $a['status'] . '",';
-                                          } ?>],
-                              datasets: [{
-                                    label: 'Expense by Category',
-                                    data: [<?php while ($b = mysqli_fetch_array($exp_amt_dc)) {
-                                             echo '"' . $b['count(id)'] . '",';
-                                          } ?>],
-                                          
-                                 
-                                          backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                            'rgba(255, 205, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(201, 203, 207, 0.2)'
-                                                         ],
-                                                         borderColor: [
-                                                            'rgb(255, 99, 132)',
-                                                            'rgb(255, 159, 64)',
-                                                            'rgb(255, 205, 86)',
-                                                            'rgb(75, 192, 192)',
-                                                            'rgb(54, 162, 235)',
-                                                            'rgb(153, 102, 255)',
-                                                            'rgb(201, 203, 207)'
-                                                         ],
-                                                         borderWidth: 1
-                                    }]
-                              },
-                              });
-                              </script>						
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              
+                              </div>
                      </div>
                   </div>
 				   </div><!--End Row-->
+               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+               <script>
+               (function () {
+                  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                  Chart.defaults.color = isDark ? '#a8bdd0' : '#5a6f82';
+                  var ctx = document.getElementById('myChart');
+                  var ctx2 = document.getElementById('myChart2');
+                  if (!ctx || !ctx2) return;
+
+                  new Chart(ctx, {
+                     type: 'line',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_date_line, 0);
+                           while ($c = mysqli_fetch_array($exp_date_line)) {
+                              echo '"' . $c['entry_date'] . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Entry by Date',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_line, 0);
+                              while ($d = mysqli_fetch_array($exp_amt_line)) {
+                                 echo '"' . $d['count(id)'] . '",';
+                              }
+                           ?>],
+                           borderColor: '#00afeb',
+                           backgroundColor: 'rgba(86, 201, 246, 0.25)',
+                           pointBackgroundColor: '#d8ba6f',
+                           fill: true,
+                           tension: 0.35,
+                           borderWidth: 2
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        scales: {
+                           x: { grid: { color: 'rgba(0,175,235,0.08)' } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+
+                  new Chart(ctx2, {
+                     type: 'bar',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_category_dc, 0);
+                           while ($a = mysqli_fetch_array($exp_category_dc)) {
+                              echo '"' . addslashes($a['status']) . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Status by Category',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_dc, 0);
+                              while ($b = mysqli_fetch_array($exp_amt_dc)) {
+                                 echo '"' . $b['count(id)'] . '",';
+                              }
+                           ?>],
+                           backgroundColor: [
+                              'rgba(0, 175, 235, 0.55)',
+                              'rgba(216, 186, 111, 0.65)',
+                              'rgba(86, 201, 246, 0.55)',
+                              'rgba(229, 216, 171, 0.7)',
+                              'rgba(0, 175, 235, 0.4)',
+                              'rgba(216, 186, 111, 0.45)',
+                              'rgba(86, 201, 246, 0.4)'
+                           ],
+                           borderColor: ['#00afeb', '#d8ba6f', '#56c9f6', '#e5d8ab', '#00afeb', '#d8ba6f', '#56c9f6'],
+                           borderWidth: 1,
+                           borderRadius: 6
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                           x: { grid: { display: false } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+               })();
+               </script>
 
             <?php
                }
             ?> 
 
-            
-            <br/> 
-          
-          
             <?php
                include('components/footer.php');
             ?>
          </div>
-        
-        
-        
       </div>
-     
-      <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script> 
 
-      <link rel="stylesheet" href="assets/js/datatables/datatables.css" id="style-resource-1">
-      <link rel="stylesheet" href="assets/js/jvectormap/jquery-jvectormap-1.2.2.css" id="style-resource-1">
-      <link rel="stylesheet" href="assets/js/rickshaw/rickshaw.min.css" id="style-resource-2">
-      <script src="assets/js/gsap/TweenMax.min.js" id="script-resource-1"></script> 
-      <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js" id="script-resource-2"></script> 
-      <script src="assets/js/bootstrap.js" id="script-resource-3"></script> <script src="assets/js/joinable.js" id="script-resource-4"></script> 
-      <script src="assets/js/resizeable.js" id="script-resource-5"></script> 
-      <script src="assets/js/neon-api.js" id="script-resource-6"></script> 
-      <script src="assets/js/cookies.min.js" id="script-resource-7"></script> 
-      <script src="assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js" id="script-resource-8"></script> 
-      <script src="assets/js/jvectormap/jquery-jvectormap-europe-merc-en.js" id="script-resource-9"></script> 
-      <script src="assets/js/jquery.sparkline.min.js" id="script-resource-10"></script> 
-      <script src="assets/js/rickshaw/vendor/d3.v3.js" id="script-resource-11"></script> 
-      <script src="assets/js/rickshaw/rickshaw.min.js" id="script-resource-12"></script> 
-      <script src="assets/js/raphael-min.js" id="script-resource-13"></script> 
-      <script src="assets/js/morris.min.js" id="script-resource-14"></script> 
-      <script src="assets/js/toastr.js" id="script-resource-15"></script> 
-      <script src="assets/js/neon-chat.js" id="script-resource-16"></script>  
-      <script src="assets/js/neon-custom.js" id="script-resource-17"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-18"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-19"></script> 
+      <!-- Essential scripts only: DataTables + sidebar (neon-custom) + Bootstrap -->
+      <link rel="stylesheet" href="assets/js/datatables/datatables.css">
+      <script src="assets/js/datatables/datatables.js"></script>
+      <script src="assets/js/gsap/TweenMax.min.js"></script>
+      <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js"></script>
+      <script src="assets/js/bootstrap.js"></script>
+      <script src="assets/js/joinable.js"></script>
+      <script src="assets/js/resizeable.js"></script>
+      <script src="assets/js/neon-api.js"></script>
+      <script src="assets/js/cookies.min.js"></script>
+      <script src="assets/js/neon-custom.js"></script>
      
    </body>
 </html>

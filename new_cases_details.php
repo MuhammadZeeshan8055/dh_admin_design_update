@@ -135,70 +135,94 @@
          cursor: pointer;
          }
          #modal{
-         background: rgba(0,0,0,0.7);
+         background: rgba(11, 20, 30, 0.72);
          position: fixed;
          left: 0;
          top:0;
          width: 100%;
          height: 100%;
-         z-index: 100;
+         z-index: 2500;
          display: none;
+         overflow-y: auto;
+         padding: 24px 0 40px;
          }
          #modal-form {
             background: #fff;
             width: 90%;
             position: relative;
-            top: 3%;
-            left: calc(50% - 44%);
-            padding: 15px;
-            border-radius: 4px;
+            top: 0;
+            left: calc(50% - 45%);
+            padding: 0 15px 20px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 18px 48px rgba(7, 31, 47, 0.35);
          }
          #modal-form h2{
-         margin: 0 0 15px;
-         padding-bottom: 10px;
-         border-bottom: 1px solid #000;
+         margin: 0 -15px 18px;
+         padding: 16px 52px 16px 20px;
+         border-bottom: 0;
+         color: rgba(247, 251, 253, 0.96);
+         font-size: 18px;
+         font-weight: 600;
+         letter-spacing: 0.01em;
+         background:
+            radial-gradient(circle at 92% 14%, rgba(216, 186, 111, .14), transparent 245px),
+            linear-gradient(110deg, #254260 0%, #176e91 54%, #267d98 100%);
+         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
          }
          #modal-form input[type = "text"]{
          width: 100%;
          }
          #close-btn{
-         background: red;
-         color: white;
-         width: 30px;
-         height: 30px;
-         line-height: 30px;
+         background: rgba(255, 255, 255, 0.14);
+         color: #fff;
+         width: 32px;
+         height: 32px;
+         line-height: 32px;
          text-align: center;
          border-radius: 50%;
+         border: 1px solid rgba(255, 255, 255, 0.22);
          position: absolute;
-         top: -15px;
-         right: -15px;
+         top: 12px;
+         right: 14px;
          cursor: pointer;
+         z-index: 2;
          }
-         #close-btn2{
-         background: red;
-         color: white;
-         width: 30px;
-         height: 30px;
-         line-height: 30px;
-         text-align: center;
-         border-radius: 50%;
-         position: absolute;
-         top: -15px;
-         right: -15px;
-         cursor: pointer;
-         }
+         #close-btn2,
          #close-btn3{
-         background: red;
-         color: white;
-         width: 30px;
-         height: 30px;
-         line-height: 30px;
+         background: rgba(255, 255, 255, 0.14);
+         color: #fff;
+         width: 32px;
+         height: 32px;
+         line-height: 32px;
          text-align: center;
          border-radius: 50%;
+         border: 1px solid rgba(255, 255, 255, 0.22);
          position: absolute;
-         top: -15px;
-         right: -15px;
+         top: 12px;
+         right: 14px;
          cursor: pointer;
+         z-index: 2;
+         }
+         .modal2-form,
+         .modal3-form {
+            overflow: hidden !important;
+            border-radius: 14px !important;
+            padding: 0 15px 20px !important;
+            box-shadow: 0 18px 48px rgba(7, 31, 47, 0.35) !important;
+         }
+         .modal2-form h2,
+         .modal3-form h2 {
+            margin: 0 -15px 18px !important;
+            padding: 16px 52px 16px 20px !important;
+            border-bottom: 0 !important;
+            color: rgba(247, 251, 253, 0.96) !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            background:
+               radial-gradient(circle at 92% 14%, rgba(216, 186, 111, .14), transparent 245px),
+               linear-gradient(110deg, #254260 0%, #176e91 54%, #267d98 100%) !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
          }
          .page-container {
             width: auto;
@@ -213,13 +237,13 @@
 
 
          #modal2{
-         background: rgba(0,0,0,0.7);
+         background: rgba(11, 20, 30, 0.72);
          position: fixed;
          left: 0;
          top:0;
          width: 100%;
          height: 100%;
-         z-index: 100;
+         z-index: 2500;
          display: none;
          }
          #modal2-form {
@@ -242,13 +266,13 @@
 
 
          #modal3{
-         background: rgba(0,0,0,0.7);
+         background: rgba(11, 20, 30, 0.72);
          position: fixed;
          left: 0;
          top:0;
          width: 100%;
          height: 100%;
-         z-index: 100;
+         z-index: 2500;
          display: none;
          }
          #modal3-form {

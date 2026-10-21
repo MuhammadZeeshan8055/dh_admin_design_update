@@ -19,7 +19,14 @@ if(mysqli_num_rows($result) > 0 ){
 
   while($row = mysqli_fetch_assoc($result)){
       
-    $check_company=mysqli_fetch_assoc(mysqli_query($con,"select * from company_info where emp_id='$row[id]'"));
+    $check_company = mysqli_fetch_assoc(mysqli_query($con, "select * from company_info where emp_id='$row[id]'"));
+    if (!is_array($check_company)) {
+        $check_company = array(
+            'company_name' => '',
+            'trade' => '',
+            'miscellaneous' => ''
+        );
+    }
     
     
     $output .= "<div class='row'>
@@ -537,13 +544,14 @@ if(mysqli_num_rows($result) > 0 ){
                     //     </div>
                     // </div>
                     
+                    $misc_val = htmlspecialchars($check_company["miscellaneous"] ?? '', ENT_QUOTES);
                     $output.="
               
                  
                     <div class='col-md-3'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Miscellaneous</label> 
-                            <input type='text' class='form-control' value='{$check_company["miscellaneous"]}' id='miscellaneous' value=''> 
+                            <input type='text' class='form-control' value='{$misc_val}' id='miscellaneous'> 
                         </div>
                     </div>
                     
