@@ -1,0 +1,28 @@
+# Database backups & dumps
+database_backup/
+**/sql_dump/
+*.sql
+
+# Logs
+error_log
+**/error_log
+*.log
+
+# Archives / local packages
+*.zip
+*.rar
+*.7z
+
+# Composer vendor (reinstall with composer install)
+excel_email_attachment/vendor/
+
+# Uploads & runtime
+**/uploads/
+!**/uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
