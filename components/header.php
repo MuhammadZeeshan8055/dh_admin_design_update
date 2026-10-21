@@ -525,10 +525,15 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                $country_list = mysqli_query($con, "select * from country");
 
                while ($check_countries = mysqli_fetch_assoc($country_list)) {
+                  $countryName = $check_countries['country_name'];
                   ?>
-                  <li class="active"> <a href="index?country=<?= $check_countries['country_name'] ?>"> <img
-                           src="assets/images/flags/<?= $check_countries['flag_img'] ?>" width="16" height="16" />
-                        <span><?= $check_countries['country_name'] ?></span> </a> </li>
+                  <li class="<?= $countryName === $country ? 'active' : '' ?>">
+                     <a href="index?country=<?= urlencode($countryName) ?>">
+                        <img src="assets/images/flags/<?= htmlspecialchars($check_countries['flag_img'], ENT_QUOTES, 'UTF-8') ?>"
+                           width="16" height="16" alt="" />
+                        <span><?= htmlspecialchars($countryName, ENT_QUOTES, 'UTF-8') ?></span>
+                     </a>
+                  </li>
 
                   <?php
                }

@@ -2654,9 +2654,20 @@ body:not(.login-page) .nav-tabs > li > a:hover {
   right: 0 !important;
   left: auto !important;
   width: 230px;
-  max-height: 330px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  max-height: min(460px, calc(100vh - 110px));
+  box-sizing: border-box;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(86, 201, 246, .55) rgba(255, 255, 255, .06);
+}
+
+.dh-app-header .language-selector .dropdown-menu > li {
+  position: relative;
+  float: none;
+  width: 100%;
+  margin: 0 0 3px;
 }
 
 .dh-app-header .language-selector .dropdown-menu > li > a,
@@ -2673,6 +2684,12 @@ body:not(.login-page) .nav-tabs > li > a:hover {
 .dh-app-header .language-selector .dropdown-menu > li > a:hover {
   color: #fff !important;
   background: linear-gradient(90deg, rgba(0, 175, 235, .22), rgba(86, 201, 246, .10)) !important;
+}
+
+.dh-app-header .language-selector .dropdown-menu > li.active > a {
+  color: #fff !important;
+  background: linear-gradient(90deg, rgba(216, 186, 111, .27), rgba(229, 216, 171, .10)) !important;
+  box-shadow: inset 3px 0 0 #d8ba6f;
 }
 
 @media (max-width: 767px) {
