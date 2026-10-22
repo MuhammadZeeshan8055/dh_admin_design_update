@@ -380,7 +380,7 @@
       <link rel="stylesheet" href="assets/js/datatables/datatables.css" id="style-resource-1">
       <link rel="stylesheet" href="assets/js/select2/select2-bootstrap.css" id="style-resource-2">
       <link rel="stylesheet" href="assets/js/select2/select2.css" id="style-resource-3">
-      <script src="assets/js/gsap/TweenMax.min.js" id="script-resource-1"></> 
+      <script src="assets/js/gsap/TweenMax.min.js" id="script-resource-1"></script> 
       <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js" id="script-resource-2"></script> 
       <script src="assets/js/bootstrap.js" id="script-resource-3"></script> 
       <script src="assets/js/joinable.js" id="script-resource-4"></script> 
@@ -389,10 +389,7 @@
       <script src="assets/js/cookies.min.js" id="script-resource-7"></script> 
       <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script> 
       <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script> 
-      <script src="assets/js/neon-chat.js" id="script-resource-10"></script>  
-      <script src="assets/js/neon-custom.js" id="script-resource-11"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-12"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-13"></script> 
+      <script src="assets/js/neon-custom.js" id="script-resource-11"></script> 
        
    <script type="text/javascript" src="js/jquery.js"></script>
 

@@ -846,6 +846,10 @@ table.table-bordered > tbody > tr > td {
   color: #087fab !important;
 }
 
+[data-theme="dark"] .dh-dashboard .page-container .sidebar-menu #main-menu li.active > a .title {
+  color: #fff !important;
+}
+
 .dh-dashboard .page-container .sidebar-menu #main-menu li ul {
   padding: 3px 0 5px 28px !important;
 }
@@ -2214,6 +2218,10 @@ body:not(.login-page) .page-container .sidebar-menu #main-menu li ul li a {
 body:not(.login-page) .page-container .sidebar-menu #main-menu li ul li.active > a {
   color: #fff !important;
   background: rgba(86, 201, 246, .12) !important;
+}
+
+body:not(.login-page) .page-container .sidebar-menu #main-menu li ul li.active > a .title {
+  color: #fff !important;
 }
 
 body:not(.login-page) .page-container .sidebar-menu #main-menu li ul li:not(.active) > a:hover {

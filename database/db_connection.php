@@ -28,3 +28,8 @@ $con = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 if (!$con) {
 	die('Connection failed: ' . mysqli_connect_error());
 }
+
+// One timezone set for the shared connection (avoid per-page repeats)
+mysqli_query($con, "SET time_zone = '+05:00'");
+
+require_once __DIR__ . '/count_cache.php';

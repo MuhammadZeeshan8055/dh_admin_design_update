@@ -1,12 +1,14 @@
-<?php
+﻿<?php
     include('database/db_connection.php');
     include('session.php');
     
     
     if(isset($_GET['status'])){
        $status=$_GET['status'];
+    } else {
+       $status = '';
     }
-    
+
     if(isset($_POST['status'])){
 
          $id = $_POST['getid'];
@@ -401,6 +403,34 @@
    
         }
    }
+
+    // Shared dropdown options — rendered into modal <select>s (no JS list build)
+    $company_options_html = "<option value=\"\">Select Company</option>";
+    $co_q = mysqli_query($con, "SELECT company_name FROM company_list ORDER BY company_name");
+    if ($co_q) {
+       while ($co = mysqli_fetch_assoc($co_q)) {
+          if ($co['company_name'] !== '') {
+             $cn = htmlspecialchars($co['company_name'], ENT_QUOTES, 'UTF-8');
+             $company_options_html .= "<option value=\"{$cn}\">{$cn}</option>";
+          }
+       }
+    }
+    $trade_options_html = "<option value=\"\">Select trade</option>";
+    $tr_q = mysqli_query($con, "SELECT trade FROM trade ORDER BY trade");
+    if ($tr_q) {
+       while ($tr = mysqli_fetch_assoc($tr_q)) {
+          if ($tr['trade'] !== '') {
+             $tn = htmlspecialchars($tr['trade'], ENT_QUOTES, 'UTF-8');
+             $trade_options_html .= "<option value=\"{$tn}\">{$tn}</option>";
+          }
+       }
+    }
+
+    $isRomania = (($_SESSION['country'] ?? '') === 'Romania');
+    $ajaxQs = 'status=' . urlencode($status);
+    if (!empty($_GET['date1']) && !empty($_GET['date2'])) {
+       $ajaxQs .= '&date1=' . urlencode($_GET['date1']) . '&date2=' . urlencode($_GET['date2']);
+    }
     
 ?>
 <!DOCTYPE html> 
@@ -425,6 +455,29 @@
       <link rel="stylesheet" href="assets/css/neon-theme.css" id="style-resource-6">
       <link rel="stylesheet" href="assets/css/neon-forms.css" id="style-resource-7">
       <link rel="stylesheet" href="assets/css/custom.css" id="style-resource-8">
+      <style>
+         #table-4_wrapper .dataTables_processing {
+            top: 110px !important;
+            margin-top: 0 !important;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+         }
+         #table-4.dh-table-pending {
+            visibility: hidden;
+         }
+         /* Above header/sidebar (z-index ~1250) */
+         .modal-backdrop { z-index: 2490 !important; }
+         .modal { z-index: 2500 !important; }
+         #dhCompanyShowModal .modal-content,
+         #dhCompanyAssignModal .modal-content,
+         #dhFlightModal .modal-content {
+            overflow: visible !important;
+         }
+      </style>
       <script src="assets/js/jquery-1.11.3.min.js"></script> <!--[if lt IE 9]><script src="https://demo.neontheme.com/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->  <!--[if lt IE 9]> <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script> <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script> <![endif]-->  
    </head>
    <body class="page-body">
@@ -445,84 +498,8 @@
             
            
             <h3>Exporting Table Data</h3>
-            <br/> <script type="text/javascript">
-               jQuery(document).ready(function($) {
-                    var $table4 = jQuery("#table-4");
-                    
-                    // Initialize DataTable with enhanced search features
-                    var table = $table4.DataTable({
-                        dom: 'Bfrtip',
-                        buttons: [
-                            {
-                                extend: 'copyHtml5',
-                                exportOptions: {
-                                    columns: ':not(.no-export)'
-                                }
-                            },
-                            {
-                                extend: 'excelHtml5',
-                                exportOptions: {
-                                    columns: ':not(.no-export)'
-                                }
-                            },
-                            {
-                                extend: 'csvHtml5',
-                                exportOptions: {
-                                    columns: ':not(.no-export)'
-                                }
-                            },
-                            {
-                                extend: 'pdfHtml5',
-                                exportOptions: {
-                                    columns: ':not(.no-export)'
-                                }
-                            }
-                        ],
-                        // Enable individual column searching
-                        initComplete: function() {
-                            // Add search inputs to each column header
-                            this.api().columns().every(function() {
-
-                                var column = this;
-                            
-                                if ($(column.header()).hasClass('no-export')) {
-                                    return;
-                                }
-                            
-                                var title = column.header().textContent;
-                            
-                                var input = document.createElement('input');
-                                input.placeholder = 'Search ' + title;
-                                input.className = 'form-control form-control-sm';
-                                input.style.marginTop = '5px';
-                            
-                                $(input).appendTo($(column.header()))
-                                    .on('keyup change clear', function() {
-                                        if (column.search() !== this.value) {
-                                            column.search(this.value).draw();
-                                        }
-                                    });
-                            });
-
-                        }
-                    });
-                    
-                    // Alternative: Add a dedicated Company Name search
-                    $('#company-search').on('keyup', function() {
-                        // Search in the Company Name column (index 21 based on your table structure)
-                        table.column(21).search(this.value).draw();
-                    });
-                    
-                });
-            </script> 
+            <p class="text-muted" id="dh-table-loading">Loading records…</p>
             <table class="table table-bordered datatable table-3" id="table-4">
-                <!-- Add this BEFORE your <table> tag -->
-                <div class="row mb-3">
-                    <!--<div class="col-md-6">-->
-                    <!--    <label for="company-search">Search by Company Name:</label>-->
-                    <!--    <input type="text" id="company-search" class="form-control" placeholder="Enter company name...">-->
-                    <!--</div>-->
-                </div>
                <thead>
                   <tr>
                      <th>S.no</th>
@@ -567,945 +544,216 @@
                      <?php endif; ?>
                   </tr>
                </thead>
-               <tbody>
-                  <?php
-                     $i=0;
-                     
-                        $country = $_SESSION['country']; // Store session variable to avoid repeated access
-                        $query = ""; // Initialize query variable
-                        
-                        $dateCondition = "";
-                        if (isset($_GET['date1'], $_GET['date2'])) {
-                            $date1 = $_GET['date1'];
-                            $date2 = $_GET['date2'];
-                            $dateCondition = " AND status_updated_at BETWEEN '$date1' AND '$date2'";
-                        }
-                        
-                        switch ($status) {
-                            case "Yes":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE docs_missing = '$status' 
-                                          AND country = '$country' 
-                                          AND status NOT IN ('Returned', 'Fly')"
-                                          . $dateCondition;
-                                break;
-                            case "passport_returned":
-                                 $query = "SELECT * FROM new_case_details 
-                                           WHERE passport_returned = 'Yes' 
-                                           AND country = '$country' 
-                                           AND status NOT IN ('Returned', 'Fly') OR status IS NULL"
-                                           . $dateCondition;
-                                 break;
-                        
-                            case "Total Registered Cases":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE country = '$country'" . $dateCondition;
-                                break;
-                        
-                            case "Ready To Apply":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE status = '$status' 
-                                          AND docs_missing != 'Yes' 
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                            
-                            case "Applied":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE status = '$status' 
-                                          AND docs_missing != 'Yes' 
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                                
-                            case "Returned":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE (status = '$status' or status='Request Returned')
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                                
-                            case "Work Permit Issued":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE status IN ('Work Permit Issued', 'Appointment Applied') 
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                                
-                            case "Ready To Apply":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE status = '$status' 
-                                          AND docs_missing != 'Yes' 
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                        
-                            case "passport_expiry_under_year":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE pp_expiry BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
-                                          AND country = '$country' 
-                                          AND status NOT IN ('Returned', 'Fly')"
-                                          . $dateCondition;
-                                break;
-                        
-                            case "character_expiry":
-                                $query = "SELECT *
-                                          FROM new_case_details
-                                          WHERE 
-                                            (
-                                                (
-                                                    second_character_expiry IS NOT NULL 
-                                                    AND second_character_expiry != ''
-                                                    AND second_character_expiry >= DATE_SUB(second_character_expiry, INTERVAL 180 DAY) 
-                                                    AND second_character_expiry < NOW()
-                                                )
-                                                OR 
-                                                (
-                                                    (second_character_expiry IS NULL OR second_character_expiry = '') 
-                                                    AND first_character_expiry IS NOT NULL 
-                                                    AND first_character_expiry != ''
-                                                    AND first_character_expiry >= DATE_SUB(first_character_expiry, INTERVAL 180 DAY) 
-                                                    AND first_character_expiry < NOW()
-                                                )
-                                            )
-                                            AND country = '$_SESSION[country]'
-                                            AND status NOT IN ('Returned', 'Fly')"
-                                          . $dateCondition;
-                                break;
-                        
-                            case "passport_expired":
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE pp_expiry < CURDATE() 
-                                          AND country = '$country' 
-                                          AND status NOT IN ('Returned', 'Fly')"
-                                          . $dateCondition;
-                                break;
-                        
-                            default:
-                                $query = "SELECT * FROM new_case_details 
-                                          WHERE status = '$status' 
-                                          AND (docs_missing = 'No' OR docs_missing = '')
-                                          AND country = '$country'"
-                                          . $dateCondition;
-                                break;
-                        }
-
-                        
-                        // Execute query
-                        if (!empty($query)) {
-                            $data = mysqli_query($con, $query);
-                        }
-
-
-                     while($row=mysqli_fetch_assoc($data)){
-                        $i++;
-
-                        $check_payment=mysqli_fetch_assoc(mysqli_query($con,"select * from payments where emp_id='$row[id]' and first_payment > 0 "));
-                        
-                        $check_company=mysqli_fetch_assoc(mysqli_query($con,"select * from company_info where emp_id='$row[id]'"));
-                        
-                        $flight_details=mysqli_fetch_assoc(mysqli_query($con,"select * from flight_details where emp_id='$row[id]'"));
-                        
-                        // $flight_details=mysqli_fetch_assoc(mysqli_query($con,"select * from flight_details where emp_id='$row[id]'"));
-                  ?>
-                  <tr style="color: <?= $check_payment ? 'inherit' : 'red'; ?>">
-                     <td><?=$i;?></td>
-                     <td><?=$row['name'];?></td>
-                     <td><?=$row['fname'];?></td>
-                     <td><?=$row['pp_no'];?></td>
-                    <td style="<?= (strtotime($row['pp_expiry']) <= strtotime('+1 year')) ? 'color:red;font-weight:bold;' : ''; ?>">
-                        <?= formatDate($row['pp_expiry']); ?>
-                    </td>
-                     <td><?=$row['tracking_id'];?></td>
-                     <td>
-                        <?=formatDate($row['new_case_date']);?>
-                     </td>
-                     <td>
-                        <?=formatDate($row['date_of_birth']);?>
-                     </td>
-                     <td>
-                        <?=$row['client_age'];?>
-                     </td>
-                     <td><?=$row['care_of'];?></td>
-                     <td><?=$row['mobile_no_1'];?></td>
-                     <td><?=$row['mobile_no_2'];?></td>
-                     <td><?=$row['missing_documents'];?></td>
-                     <td><?=$row['passport_returned_description'];?></td>
-                     <td><?=$row['passport_returned_date'];?></td>
-                     <td><?=$row['country'];?></td>
-                     <td>
-                        <?=formatDate($row['apply_date']);?>
-                     </td>
-                     <td>
-                        <?=formatDate($row['first_character_expiry']);?>
-                     </td>
-                        
-                     <td>
-                        <?=formatDate($row['second_character_expiry']);?>
-                     </td>
-                        
-                     <td>
-                        <?=formatDate($row['online_submission_date']);?>
-                     </td>
-                     <td>
-                        <?=formatDate($row['physical_submission_date']);?>
-                    </td>
-                     
-                     <td>
-                        <?=formatDate($row['work_permit_receiving_date']);?>
-                     </td>
-                     <td>
-                        <?=formatDate($row['appointment_date']);?>
-                     </td>
-                     <td><?=$row['entered_by'];?></td>
-                     <td><?=$row['approved_by'];?></td>
-                     <td><?=$row['updated_by'];?></td>
-                     <td><?= (isset($check_company['company_name']) && $check_company['company_name'] !== 'Select Company') ? $check_company['company_name'] : ''; ?></td>
-
-                     <td><?=$check_company['trade'] ?? '';?></td>
-                     <td><?=$check_company['miscellaneous'] ?? '';?></td>
-                     
-                        <?php
-                              if(!empty($check_company['company_name'])){
-                        ?>
-
-                             <td>                    
-                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#showModal<?=$row['id']?>">
-                                    Show Company 
-                                 </button>
-                                 
-                              </td>
-                        <?php
-                              }else{
-                        ?>
-
-                              <td>                    
-                                 <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal<?=$row['id']?>">
-                                    Assign Company 
-                                 </button>
-                              </td>
-                        <?php
-                              }
-                        ?>
-                        
-                        <?php
-                           if($status == 'Visa Issued'){
-                              if(!empty($flight_details['date_of_dep'])){
-
-                        ?>
-
-                             <td>                    
-                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flight_details<?=$row['id']?>">
-                                    Show Flight Details 
-                                 </button>
-                                 
-                              </td>
-                        <?php
-                              }else{
-                        ?>
-
-                              <td>                    
-                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flight_details<?=$row['id']?>">
-                                    Enter Flight Details 
-                                 </button>
-                              </td>
-                        <?php
-                              }
-
-                           }
-                        ?>
-                     
-                     
-                     <td>
-                         
-                         
-                        
-                     
-                  
-                     <?php
-
-                        if($row['status']=='Returned'){
-                     ?>
-
-                           <button class='btn btn-danger'><?=$row['status']?></button>
-
-                     <?php
-                        }else{
-                     ?>
-                           <button class='btn btn-primary'><?=$row['status']?></button>
-
-                     <?php
-                        }
-                        
-                     ?>
-                  
-                  
-                  
-                     </td>
-                    
-                    <?php if ($can_update === 'on'): ?>
-                     <td>
-
-                           <?php
-
-                              if($row['status']=='Ready To Apply'){
-
-                           ?>
-                                    <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-													<input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-											
-													<select name="status" class='form-control'  onchange="this.form.submit()" >
-														<option value="Ready To Apply">Ready To Apply</option>
-														<option value="Applied">Applied</option>
-                                         <option value="Returned">Returned</option>
-													</select>	
-												</form>
-                           <?php
-                              }
-                           
-
-                              elseif($row['status']=='Applied'){
-
-                              ?>
-                                    <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                       <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                 
-                                       <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                          <option value="Applied">Applied</option>
-														<option value="Work Permit Issued">Work Permit Issued</option>
-                                          <option value="Ready To Apply">Ready To Apply</option>
-                                          <option value="Returned">Returned</option>
-                                       </select>	
-                                    </form>
-                              <?php
-                              }
-                             
-
-                              elseif($row['status']=='Work Permit Issued'){
-
-                              ?>
-                                    <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                       <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                 
-                                       <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                          <option value="Work Permit Issued">Work Permit Issued</option>
-                                          <option value="Appointment Applied">Appointment Applied</option>
-                                          <option value="Applied">Applied</option>
-                                          <option value="Returned">Returned</option>
-                                       </select>	
-                                    </form>
-                              <?php
-                              }
-                              elseif($row['status']=='Appointment Applied'){
-
-                                 ?>
-                                       <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                          <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                    
-                                          <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                             <option value="Appointment Applied">Appointment Applied</option>
-                                             <option value="Visa Issued">Visa Issued</option>
-                                             <option value="Return From Embassy">Return From Embassy</option>
-                                             <option value="Applied">Applied</option>
-                                             <option value="Returned">Returned</option>
-                                          </select>	
-                                       </form>
-                                 <?php
-                                 }
-                                 elseif($row['status']=='Return From Embassy'){
-                                     ?>
-                                    
-                                     <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                          <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                    
-                                          <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                              <option value="Return From Embassy">Return From Embassy</option>
-                                             <option value="Ready To Apply">Ready To Apply</option>
-                                             <option value="Applied">Applied</option>
-                                             <option value="Work Permit Issued">Work Permit Issued</option>
-                                             <option value="Appointment Applied">Appointment Applied</option>
-                                             <option value="Returned">Returned</option>
-                                          </select>	
-                                       </form>
-                                     
-                                     
-                                    <?php
-                                     
-                                 }
-                              elseif($row['status']=='Visa Issued'){
-
-                                 ?>
-                                       <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                          <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                    
-                                          <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                             <option value="Visa Issued">Visa Issued</option>
-                                             <option value="Fly">Fly</option>
-                                             <option value="Work Permit Issued">Work Permit Issued</option>
-                                             <option value="Returned">Returned</option>
-                                          </select>	
-                                       </form>
-                              <?php
-                                 }
-                                 elseif($row['status']=='Fly'){
-
-                                    ?>
-                                          <form method="post" style='margin:0px; padding:0px; text-align:center;width:100px'>
-                                             <input type="hidden" name='getid' value='<?= $row['id']; ?>' />
-                                       
-                                             <select name="status" class='form-control'  onchange="this.form.submit()" >
-                                                <option value="Fly">Fly</option>
-                                                <option value="Visa Issued">Visa Issued</option>
-                                                <option value="Returned">Returned</option>
-                                             </select>	
-                                          </form>
-                                 <?php
-                                    }
-                                 ?>
-                     </td>
-                     
-                     
-                      <!-- Modal -->
-                      <div class="modal fade" id="showModal<?=$row['id']?>" tabindex="-1" role="dialog" aria-labelledby="showModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                           <div class="modal-header">
-                           <h2 class="modal-title" id="showModalLabel">Assign Company</h2>
-                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                           </button>
-                           </div>
-                          
-
-                              <div class="modal-body">
-
-                                 <?php
-                                    if($_SESSION['country']=='Romania'){
-                                 ?>
-                                    <form action="" method="post">
-                                       <div class="row">
-                                          <form action="" method="post">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Company Name</label>
-                                                   <input type="hidden" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                                   <!--<input type="text" name="company_name" value="<?=$check_company['company_name'];?>" id="" class="form-control">-->
-                                                   <select name='company_name' id='company_name' class='form-control'>
-                                                    
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['company_name'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['company_name'];?>"><?=$check_company['company_name'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select Company</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   
-                                                   <?php
-                                                    $dynamic_company_list=mysqli_query($con,"select * from company_list");
-                                                    
-                                                    while($company_list=mysqli_fetch_assoc($dynamic_company_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$company_list["company_name"]?>'><?=$company_list["company_name"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Trade</label>
-                                                   <!--<input type="text" name="trade" value="<?=$check_company['trade'];?>" id="" class="form-control">-->
-                                                   
-                                                    <select name='trade' id='trade' class='form-control'>
-                                                    
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['trade'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['trade'];?>"><?=$check_company['trade'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select Company</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   
-                                                   <?php
-                                                    $dynamic_trade_list=mysqli_query($con,"select * from trade");
-                                                    
-                                                    while($trade_list=mysqli_fetch_assoc($dynamic_trade_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$trade_list["trade"]?>'><?=$trade_list["trade"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                   </select>
-                                                   
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Miscellaneous</label>
-                                                   
-                                                   <input type="text" name="miscellaneous" value="<?=$check_company['miscellaneous'];?>" id="" class="form-control">
-                                                </div>
-                                             </div>
-
-                                          
-                                       </div>
-
-                                       <button type="submit" name="update_assign_company" class="btn btn-primary">Update</button>
-
-                                    </form>
-
-
-
-                                 <?php
-                                    }else{
-                                 ?>
-
-                                    <div class="row">
-                                       <form action="" method="post">
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">Company Name</label>
-                                                <input type="text" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                                <!--<input type="text" name="company_name" value="<?=$check_company['company_name'];?>" id="" class="form-control">-->
-                                                <select name='company_name' id='company_name' class='form-control'>
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['company_name'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['company_name'];?>"><?=$check_company['company_name'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select Company</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   <?php
-                                                    $dynamic_company_list=mysqli_query($con,"select * from company_list");
-                                                    
-                                                    while($company_list=mysqli_fetch_assoc($dynamic_company_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$company_list["company_name"]?>'><?=$company_list["company_name"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                </select>
-                                             </div>
-                                          </div>
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">Trade</label>
-                                                <input type="text" name="trade" value="<?=$check_company['trade'];?>" id="" class="form-control">
-                                             </div>
-                                          </div>
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">E No</label>
-                                                <input type="text" name="e_no" value="<?=$row['e_no'];?>" id="" class="form-control">
-                                             </div>
-                                          </div>
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">Visa No</label>
-                                                <input type="text" name="visa_no" value="<?=$row['visa_no'];?>" id="" class="form-control">
-                                             </div>
-                                          </div>
-
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">Sponsor ID</label>
-                                                <input type="text" name="sponsor_id" value="<?=$row['sponsor_id'];?>" id="" class="form-control">
-                                             </div>
-                                          </div>
-                                          
-                                          <div class="col-md-6">
-                                             <div class="form-group">
-                                                <label for="">Miscellaneous</label>
-                                                
-                                                <input type="text" name="miscellaneous" value="<?=$check_company['miscellaneous'];?>" id="" class="form-control">
-                                             </div>
-                                          </div>
-
-                                          <button type="submit" name="assign_company" class="btn btn-primary">Save</button>
-
-                                       </form>
-                                    </div>
-
-                                 <?php
-                                    }
-                                 ?>
-                                 
-                              </div>
-                     
-                           <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                           
-                           </div>
-                        </div>
-                     </div>
-                     </div>
-                     
-                     
-                     <!-- Flight Detail Modal -->
-                      <div class="modal fade" id="flight_details<?=$row['id']?>" tabindex="-1" role="dialog" aria-labelledby="showModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                           <div class="modal-header">
-                           <h2 class="modal-title" id="showModalLabel">Flight Details</h2>
-                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                           </button>
-                           </div>
-                          
-
-                              <div class="modal-body">
-
-                                 <?php
-                                    if($_SESSION['country']=='Romania'){
-                                 ?>
-                                    <form action="" method="post">
-                                       <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Date of Departure *</label>
-                                                   <input type="hidden" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                                   <input type="date" name="date_of_dep" value="<?=$flight_details['date_of_dep']?>" id="" class="form-control" required>
-                                                   
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Airport Name</label>
-                                                   <input type="text" name="airport_name" value="<?=$flight_details['airport_name']?>" placeholder="Enter Airport Name" id="" class="form-control">
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Airline</label>
-                                                   
-                                                   <input type="text" name="airline" value="<?=$flight_details['airline']?>" placeholder="Enter Airline Name" id="" class="form-control">
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Route</label>
-                                                   <input type="text" name="route" value="<?=$flight_details['from_to']?>" placeholder="Enter Route Details" id="" class="form-control">
-                                                </div>
-                                             </div>
-
-                                          
-                                       </div>
-
-                                       <button type="submit" name="update_flight_detail" class="btn btn-primary">Update</button>
-
-                                    </form>
-
-
-
-                                 <?php
-                                    }else{
-                                 ?>
-
-                                       <div class="row">
-                                          <form action="" method="post">
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Date of Departure</label>
-                                                   <input type="hidden" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                                   <input type="date" name="date_of_dep" value="" id="" class="form-control">
-                                                   
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Airport Name</label>
-                                                   <input type="text" name="airport_name" value="" placeholder="Enter Airport Name" id="" class="form-control">
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Airline</label>
-                                                   
-                                                   <input type="text" name="airline" value="" placeholder="Enter Airline Name" id="" class="form-control">
-                                                </div>
-                                             </div>
-                                             <div class="col-md-6">
-                                                <div class="form-group">
-                                                   <label for="">Route</label>
-                                                   <input type="text" name="route" value="" placeholder="Enter Route Details" id="" class="form-control">
-                                                </div>
-                                             </div>
-
-                                          
-                                       </div>
-
-                                       <button type="submit" name="update_flight_detail" class="btn btn-primary">Update</button>
-
-                                    </form>
-                                    </div>
-
-                                 <?php
-                                    }
-                                 ?>
-                                 
-                              </div>
-                     
-                           <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                           
-                           </div>
-                        </div>
-                     </div>
-                     </div>
-
-                     <!-- Modal -->
-                     <div class="modal fade" id="exampleModal<?=$row['id']?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                     <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                           <div class="modal-header">
-                           <h5 class="modal-title" id="exampleModalLabel">Assign Company</h5>
-                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                           </button>
-                           </div>
-                           <?php
-                              if($_SESSION['country']=='Romania'){
-                           ?>
-
-                              <div class="modal-body">
-                                 <form action="" method="post">
-                                    <div class="row">
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Company Name</label>
-                                             <input type="hidden" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                             <!--<input type="text" name="company_name" id="" class="form-control">-->
-                                                <select name='company_name' id='company_name' class='form-control'>
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['company_name'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['company_name'];?>"><?=$check_company['company_name'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select Company</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   <?php
-                                                    $dynamic_company_list=mysqli_query($con,"select * from company_list");
-                                                    
-                                                    while($company_list=mysqli_fetch_assoc($dynamic_company_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$company_list["company_name"]?>'><?=$company_list["company_name"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Trade</label>
-                                             <!--<input type="text" name="trade" id="" class="form-control">-->
-                                             
-                                             <select name='trade' id='trade' class='form-control'>
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['trade'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['trade'];?>"><?=$check_company['trade'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select trade</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   <?php
-                                                    $dynamic_trade_list=mysqli_query($con,"select * from trade");
-                                                    
-                                                    while($trade_list=mysqli_fetch_assoc($dynamic_trade_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$trade_list["trade"]?>'><?=$trade_list["trade"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                </select>
-                                             
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Miscellaneous</label>
-                                             <input type="text" name="miscellaneous" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                    </div>
-                                    <button type="submit" name="assign_company" class="btn btn-primary">Save</button>
-                                 
-                                 </div>
-                              </form>
-                           <?php
-                              }else{
-                           ?>
-                              <div class="modal-body">
-                                 <form action="" method="post">
-                                    <div class="row">
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Company Name</label>
-                                             <input type="hidden" name="employee_id" value="<?=$row['id'];?>" id="" class="form-control">
-
-                                             <!--<input type="text" name="company_name" id="" class="form-control">-->
-                                                <select name='company_name' id='company_name' class='form-control'>
-                                                    <?php
-                                                        
-                                                        if(!empty($check_company['company_name'])){
-                                                        
-                                                        ?>
-                                                    
-                                                            <option value="<?=$check_company['company_name'];?>"><?=$check_company['company_name'];?></option>
-                                                    
-                                                        <?php
-                                                        }else{
-                                                        ?>
-                                                        
-                                                            <option>Select Company</option>
-                                                        
-                                                        <?php
-                                                        }
-                                                    ?>
-                                                   <?php
-                                                    $dynamic_company_list=mysqli_query($con,"select * from company_list");
-                                                    
-                                                    while($company_list=mysqli_fetch_assoc($dynamic_company_list)){
-                                                        ?>
-                                                        
-                                                            <option value='<?=$company_list["company_name"]?>'><?=$company_list["company_name"]?></option>
-                                                            
-                                                        <?php
-                                                    }
-                                                    
-                                                   ?>
-                                                </select>
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Trade</label>
-                                             <input type="text" name="trade" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">E No</label>
-                                             <input type="text" name="e_no" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Visa No</label>
-                                             <input type="text" name="visa_no" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                       <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Sponsor ID</label>
-                                             <input type="text" name="sponsor_id" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                        <div class="col-md-6">
-                                          <div class="form-group">
-                                             <label for="">Miscellaneous</label>
-                                             <input type="text" name="miscellaneous" id="" class="form-control">
-                                          </div>
-                                       </div>
-                                    </div>
-                                 
-                                    <button type="submit" name="assign_company" class="btn btn-primary">Save</button>
-                                
-                                 </div>
-                              </form>
-                           <?php
-                              }
-                           ?> 
-                           <div class="modal-footer">
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                           
-                           </div>
-                        </div>
-                     </div>
-                     </div>
-                     
-                    <?php endif; ?>
-
-                     
-                  </tr>
-                  <?php
-                     }
-                  ?>
-               </tbody>
-               
+               <tbody></tbody>
             </table>
+
+            <!-- Shared company / flight modals (one each — filled on open) -->
+            <div class="modal fade" id="dhCompanyShowModal" tabindex="-1" role="dialog" aria-hidden="true">
+               <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h2 class="modal-title">Assign Company</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                     </div>
+                     <div class="modal-body">
+<?php if ($isRomania): ?>
+                        <form method="post">
+                           <div class="row">
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="hidden" name="employee_id" id="dh-show-emp-id" class="form-control">
+                                    <select name="company_name" id="dh-show-company" class="form-control"><?= $company_options_html ?></select>
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Trade</label>
+                                    <select name="trade" id="dh-show-trade" class="form-control"><?= $trade_options_html ?></select>
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Miscellaneous</label>
+                                    <input type="text" name="miscellaneous" id="dh-show-misc" class="form-control">
+                                 </div>
+                              </div>
+                           </div>
+                           <button type="submit" name="update_assign_company" class="btn btn-primary">Update</button>
+                        </form>
+<?php else: ?>
+                        <form method="post">
+                           <div class="row">
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="hidden" name="employee_id" id="dh-show-emp-id" class="form-control">
+                                    <select name="company_name" id="dh-show-company" class="form-control"><?= $company_options_html ?></select>
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Trade</label>
+                                    <input type="text" name="trade" id="dh-show-trade" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>E No</label>
+                                    <input type="text" name="e_no" id="dh-show-eno" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Visa No</label>
+                                    <input type="text" name="visa_no" id="dh-show-visa" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Sponsor ID</label>
+                                    <input type="text" name="sponsor_id" id="dh-show-sponsor" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Miscellaneous</label>
+                                    <input type="text" name="miscellaneous" id="dh-show-misc" class="form-control">
+                                 </div>
+                              </div>
+                           </div>
+                           <button type="submit" name="update_assign_company" class="btn btn-primary">Update</button>
+                        </form>
+<?php endif; ?>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <div class="modal fade" id="dhCompanyAssignModal" tabindex="-1" role="dialog" aria-hidden="true">
+               <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h5 class="modal-title">Assign Company</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                     </div>
+                     <div class="modal-body">
+                        <form method="post">
+                           <div class="row">
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="hidden" name="employee_id" id="dh-assign-emp-id" class="form-control">
+                                    <select name="company_name" id="dh-assign-company" class="form-control"><?= $company_options_html ?></select>
+                                 </div>
+                              </div>
+<?php if ($isRomania): ?>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Trade</label>
+                                    <select name="trade" id="dh-assign-trade" class="form-control"><?= $trade_options_html ?></select>
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Miscellaneous</label>
+                                    <input type="text" name="miscellaneous" id="dh-assign-misc" class="form-control">
+                                 </div>
+                              </div>
+<?php else: ?>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Trade</label>
+                                    <input type="text" name="trade" id="dh-assign-trade" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>E No</label>
+                                    <input type="text" name="e_no" id="dh-assign-eno" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Visa No</label>
+                                    <input type="text" name="visa_no" id="dh-assign-visa" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Sponsor ID</label>
+                                    <input type="text" name="sponsor_id" id="dh-assign-sponsor" class="form-control">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Miscellaneous</label>
+                                    <input type="text" name="miscellaneous" id="dh-assign-misc" class="form-control">
+                                 </div>
+                              </div>
+<?php endif; ?>
+                           </div>
+                           <button type="submit" name="assign_company" class="btn btn-primary">Save</button>
+                        </form>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <div class="modal fade" id="dhFlightModal" tabindex="-1" role="dialog" aria-hidden="true">
+               <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h2 class="modal-title">Flight Details</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                     </div>
+                     <div class="modal-body">
+                        <form method="post">
+                           <div class="row">
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Date of Departure<?= $isRomania ? ' *' : '' ?></label>
+                                    <input type="hidden" name="employee_id" id="dh-flight-emp-id" class="form-control">
+                                    <input type="date" name="date_of_dep" id="dh-flight-dep" class="form-control"<?= $isRomania ? ' required' : '' ?>>
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Airport Name</label>
+                                    <input type="text" name="airport_name" id="dh-flight-airport" class="form-control" placeholder="Enter Airport Name">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Airline</label>
+                                    <input type="text" name="airline" id="dh-flight-airline" class="form-control" placeholder="Enter Airline Name">
+                                 </div>
+                              </div>
+                              <div class="col-md-6">
+                                 <div class="form-group">
+                                    <label>Route</label>
+                                    <input type="text" name="route" id="dh-flight-route" class="form-control" placeholder="Enter Route Details">
+                                 </div>
+                              </div>
+                           </div>
+                           <button type="submit" name="update_flight_detail" class="btn btn-primary">Update</button>
+                        </form>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
             <br/>  
+
             <?php
                include('components/footer.php');
             ?>
@@ -1524,10 +772,92 @@
       <script src="assets/js/cookies.min.js" id="script-resource-7"></script> 
       <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script> 
       <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script> 
-      <script src="assets/js/neon-chat.js" id="script-resource-10"></script>  
-      <script src="assets/js/neon-custom.js" id="script-resource-11"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-12"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-13"></script> 
+      <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
+
+      <script type="text/javascript">
+      jQuery(function ($) {
+         var $table4 = $("#table-4");
+         if ($.fn.DataTable && $table4.length && !$.fn.DataTable.isDataTable($table4)) {
+            $table4.DataTable({
+               ajax: {
+                  url: 'status_wise_data_data.php?<?= $ajaxQs ?>',
+                  dataSrc: 'data'
+               },
+               deferRender: true,
+               pageLength: 25,
+               order: [],
+               processing: true,
+               dom: 'Bfrtip',
+               buttons: [
+                  { extend: 'copyHtml5', exportOptions: { columns: ':not(.no-export)' } },
+                  { extend: 'excelHtml5', exportOptions: { columns: ':not(.no-export)' } },
+                  { extend: 'csvHtml5', exportOptions: { columns: ':not(.no-export)' } },
+                  { extend: 'pdfHtml5', exportOptions: { columns: ':not(.no-export)' } }
+               ],
+               initComplete: function () {
+                  $('#dh-table-loading').hide();
+                  $table4.removeClass('dh-table-pending');
+
+                  this.api().columns().every(function () {
+                     var column = this;
+                     var $header = $(column.header());
+
+                     if ($header.hasClass('no-export') || $header.find('input.dh-col-search').length) {
+                        return;
+                     }
+
+                     var title = $header.text().replace(/\s+/g, ' ').trim();
+                     var $input = $('<input type="text" class="form-control form-control-sm dh-col-search" />')
+                        .attr('placeholder', 'Search ' + title)
+                        .css({ marginTop: '5px', width: '100%', minWidth: '70px' });
+
+                     $input.appendTo($header)
+                        .on('click mousedown', function (e) {
+                           e.stopPropagation();
+                        })
+                        .on('keyup', function () {
+                           var val = this.value;
+                           if (column.search() !== val) {
+                              column.search(val).draw();
+                           }
+                        });
+                  });
+               }
+            });
+         } else {
+            $('#dh-table-loading').hide();
+            $table4.removeClass('dh-table-pending');
+         }
+
+         // Move modals to body so they show above the header
+         $('#dhCompanyShowModal, #dhCompanyAssignModal, #dhFlightModal').appendTo('body');
+
+         // When Show/Assign Company is clicked, put button values into the modal fields
+         $(document).on('click', '.dh-open-company', function () {
+            var btn = $(this);
+            var isShow = (btn.attr('data-target') || '').indexOf('Show') !== -1;
+            var p = isShow ? 'show' : 'assign';
+
+            $('#dh-' + p + '-emp-id').val(btn.attr('data-id') || '');
+            $('#dh-' + p + '-company').val(btn.attr('data-company') || '');
+            $('#dh-' + p + '-trade').val(btn.attr('data-trade') || '');
+            $('#dh-' + p + '-misc').val(btn.attr('data-misc') || '');
+            $('#dh-' + p + '-eno').val(btn.attr('data-eno') || '');
+            $('#dh-' + p + '-visa').val(btn.attr('data-visa') || '');
+            $('#dh-' + p + '-sponsor').val(btn.attr('data-sponsor') || '');
+         });
+
+         // When Flight button is clicked, put values into the flight modal
+         $(document).on('click', '.dh-open-flight', function () {
+            var btn = $(this);
+            $('#dh-flight-emp-id').val(btn.attr('data-id') || '');
+            $('#dh-flight-dep').val(btn.attr('data-dep') || '');
+            $('#dh-flight-airport').val(btn.attr('data-airport') || '');
+            $('#dh-flight-airline').val(btn.attr('data-airline') || '');
+            $('#dh-flight-route').val(btn.attr('data-route') || '');
+         });
+      });
+      </script>
        
    </body>
 </html>

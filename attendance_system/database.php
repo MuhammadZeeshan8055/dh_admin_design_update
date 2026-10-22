@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../database/db_connection.php';
 
+if (!class_exists('Database')) {
+
 class Database{
 
 	private $db_host;
@@ -14,23 +16,21 @@ class Database{
 	private $conn = false;
 
 	public function __construct(){
-		global $db_host, $db_user, $db_pass, $db_name;
+		// Reuse the shared $con from db_connection.php (no second MySQL connection)
+		global $con, $db_host, $db_user, $db_pass, $db_name;
 		$this->db_host = $db_host;
 		$this->db_user = $db_user;
 		$this->db_pass = $db_pass;
 		$this->db_name = $db_name;
 
-		if(!$this->conn){
-			$this->mysqli = new mysqli($this->db_host,$this->db_user,$this->db_pass,$this->db_name);
-			$this->conn = true;
-			if($this->mysqli->connect_error){
-				array_push($this->result, $this->mysqli->connect_error);
-				return false;
-			}
-			$this->mysqli->query("SET time_zone = '+05:00'");
-		}else{
-			return true;
+		if (!$con instanceof mysqli) {
+			array_push($this->result, 'Shared DB connection missing');
+			return false;
 		}
+
+		$this->mysqli = $con;
+		$this->conn = true;
+		return true;
 	}
 
 
@@ -347,6 +347,8 @@ class Database{
 
 
 } //Class Close
+
+} // class_exists('Database')
 
 
 ?>

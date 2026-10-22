@@ -26,10 +26,29 @@ include('database/db_connection.php');
 
 $date = date('Y-m-d');
 
-$returned = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as returned_cases from new_case_details where status='Returned' and country='Romania'"));
-$leave_requests = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as employee_leaves from employee_leaves where status='Applied'"));
-$account_history = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as pending_account_history from audit_log where table_name='payments' and viewed = 0 AND changed_at LIKE '$date%'"));
-$new_case_details_history = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as pending_new_case_details_history from audit_log where table_name='new_case_details' and viewed = 0 AND changed_at LIKE '$date%'"));
+// Same counts as before — cached ~60s so navigating pages is faster
+$returned = dh_cached_row(
+   'sidebar_returned_cases',
+   "select count(id) as returned_cases from new_case_details where status='Returned' and country='Romania'"
+);
+$leave_requests = dh_cached_row(
+   'sidebar_leave_requests',
+   "select count(id) as employee_leaves from employee_leaves where status='Applied'"
+);
+$account_history = dh_cached_row(
+   'sidebar_account_history',
+   "select count(id) as pending_account_history from audit_log where table_name='payments' and viewed = 0 AND changed_at LIKE '$date%'"
+);
+$new_case_details_history = dh_cached_row(
+   'sidebar_case_history',
+   "select count(id) as pending_new_case_details_history from audit_log where table_name='new_case_details' and viewed = 0 AND changed_at LIKE '$date%'"
+);
+
+// Safe defaults if a query fails
+if (!is_array($returned)) { $returned = array('returned_cases' => 0); }
+if (!is_array($leave_requests)) { $leave_requests = array('employee_leaves' => 0); }
+if (!is_array($account_history)) { $account_history = array('pending_account_history' => 0); }
+if (!is_array($new_case_details_history)) { $new_case_details_history = array('pending_new_case_details_history' => 0); }
 
 // Helper function to check if menu item is active
 function isActive($current, $pages)

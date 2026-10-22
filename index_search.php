@@ -193,19 +193,15 @@ if($_POST['date']==$alltime_date){
                   </div>
                
                   <div class="col-sm-4 col-xs-6">
-                     <div class="tile-stats tile-green" onclick="window.location='status_wise_data?status=Work Permit Issued&date1=<?=$date1?>&date2=<?=$date2?>'" style="cursor:pointer">
+                     <div class="tile-stats tile-green" onclick="window.location='status_wise_data?status=<?= urlencode('Work Permit Issued') ?>&date1=<?=$date1?>&date2=<?=$date2?>'" style="cursor:pointer">
                         <?php 
-                              $work_permit_issued = mysqli_fetch_assoc(mysqli_query($con, "SELECT status, COUNT(id) AS work_permit_issued FROM new_case_details WHERE status IN ('Work Permit Issued', 'Appointment Applied') AND country='$_SESSION[country]' AND status_updated_at BETWEEN '$date1' AND '$date2'"));
-                              
-                              $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT status, COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Work Permit Issued' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly') AND status_updated_at BETWEEN '$date1' AND '$date2'"));
-                            
+                              $work_permit_issued = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS work_permit_issued FROM new_case_details WHERE status IN ('Work Permit Issued', 'Appointment Applied') AND country='$_SESSION[country]' AND status_updated_at BETWEEN '$date1' AND '$date2'"));
+                              $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Work Permit Issued' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly') AND status_updated_at BETWEEN '$date1' AND '$date2'"));
                         ?>
                         <div class="icon"><i class="entypo-rss"></i></div>
                         <div class="num" data-start="0" data-end="<?=$work_permit_issued['work_permit_issued'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
                         <h3>Work Permit Issued
-                              <span 
-                                 onclick="event.stopPropagation(); window.location='waiting_for_appointments?date1=<?=$date1?>&date2=<?=$date2?>';" 
-                                 style="font-size:1.1rem; float:right; margin-top:3px; cursor:pointer;">
+                              <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=<?= urlencode('Work Permit Issued') ?>&date1=<?=$date1?>&date2=<?=$date2?>';" style="font-size:1.1rem; display:block; margin-top:5px; cursor:pointer;">
                                  Waiting For Appointment (<?=$waiting_for_appointments['waiting_for_appointments'];?>)
                               </span>
                         </h3>

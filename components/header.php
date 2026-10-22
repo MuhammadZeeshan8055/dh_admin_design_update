@@ -1,21 +1,30 @@
 <?php
 $country = $_SESSION['country'];
+$country_esc = mysqli_real_escape_string($con, $country);
 
+// Same payment badge logic — cached per country (~60s) so pages load faster
+$payment_no_entered_cases = dh_cached_row(
+   'hdr_pay1_' . $country,
+   "SELECT count(ncd.id) as payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Returned', 'Fly', 'Return from Embassy') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND p.emp_id IS NULL and ncd.country='$country_esc'"
+);
+$second_payment_no_entered_cases = dh_cached_row(
+   'hdr_pay2_' . $country,
+   "SELECT count(ncd.id) as second_payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Applied', 'Ready To Apply', 'Returned','Return From Embassy','Appointment Applied','Fly') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.second_payment IS NULL OR p.second_payment = '') and ncd.country='$country_esc'"
+);
+$final_payment_no_entered_cases = dh_cached_row(
+   'hdr_pay3_' . $country,
+   "SELECT count(ncd.id) as final_payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status IN ('Visa Issued') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.final_payment IS NULL OR p.final_payment = '') and ncd.country='$country_esc'"
+);
 
-$payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
-   $con,
-   "SELECT count(ncd.id) as payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Returned', 'Fly', 'Return from Embassy') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND p.emp_id IS NULL and ncd.country='$_SESSION[country]'"
-));
-
-$second_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
-   $con,
-   "SELECT count(ncd.id) as second_payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Applied', 'Ready To Apply', 'Returned','Return From Embassy','Appointment Applied','Fly') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.second_payment IS NULL OR p.second_payment = '') and ncd.country='$_SESSION[country]'"
-));
-
-$final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
-   $con,
-   "SELECT count(ncd.id) as final_payment_no_entered_cases FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status IN ('Visa Issued') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.final_payment IS NULL OR p.final_payment = '') and ncd.country='$_SESSION[country]'"
-));
+if (!is_array($payment_no_entered_cases)) {
+   $payment_no_entered_cases = array('payment_no_entered_cases' => 0);
+}
+if (!is_array($second_payment_no_entered_cases)) {
+   $second_payment_no_entered_cases = array('second_payment_no_entered_cases' => 0);
+}
+if (!is_array($final_payment_no_entered_cases)) {
+   $final_payment_no_entered_cases = array('final_payment_no_entered_cases' => 0);
+}
 
 ?>
 
@@ -71,21 +80,49 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
       </ul>
       <?php
       if ($userrole == 'Super Admin') {
+         // Badge counts once (cached) — reuse below, no duplicate COUNT queries
+         $check_request_returned = dh_cached_row(
+            'hdr_req_returned',
+            "select count(id) as requests from new_case_details where status LIKE  'Request Returned'"
+         );
+         $check_request_delete = dh_cached_row(
+            'hdr_req_delete',
+            "select count(id) as requests from new_case_details where status LIKE  'Request Delete'"
+         );
+         $check_appt_pending = dh_cached_row(
+            'hdr_appt_' . $country,
+            "SELECT count(id) as appointment_not_applied
+               FROM new_case_details
+               WHERE (appointment_date IS NULL OR appointment_date = '')
+                 AND work_permit_receiving_date IS NOT NULL
+                 AND work_permit_receiving_date != ''
+                 AND work_permit_receiving_date <= CURDATE() - INTERVAL 30 DAY
+                 AND country = '$country_esc'
+                 AND status NOT IN ('Returned','Return From Embassy','Fly')"
+         );
+         $check_payment_hand_over = dh_cached_row(
+            'hdr_pay_handover',
+            "select count(id) as pending from payment_handed_over_to where approved='Pending'"
+         );
+
+         if (!is_array($check_request_returned)) { $check_request_returned = array('requests' => 0); }
+         if (!is_array($check_request_delete)) { $check_request_delete = array('requests' => 0); }
+         if (!is_array($check_appt_pending)) { $check_appt_pending = array('appointment_not_applied' => 0); }
+         if (!is_array($check_payment_hand_over)) { $check_payment_hand_over = array('pending' => 0); }
+
+         $req_returned_n = (int) $check_request_returned['requests'];
+         $req_delete_n = (int) $check_request_delete['requests'];
+         $appt_n = (int) $check_appt_pending['appointment_not_applied'];
+         $handover_n = (int) $check_payment_hand_over['pending'];
          ?>
          <ul class="user-info pull-left pull-right-xs pull-none-xsm">
             <li class="notifications dropdown">
-               <?php
-               $check_request = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as requests from new_case_details where status LIKE  'Request Returned'"));
-               ?>
                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                  <i class="entypo-mail"></i> <span class="badge badge-info"><?= $check_request['requests']; ?></span> </a>
+                  <i class="entypo-mail"></i> <span class="badge badge-info"><?= $req_returned_n; ?></span> </a>
                <ul class="dropdown-menu">
                   <li class="top">
-                     <?php
-                     $check_request = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as requests from new_case_details where status LIKE  'Request Returned'"));
-                     ?>
                      <p class="small">
-                        You have <strong><?= $check_request['requests']; ?></strong> new notifications.
+                        You have <strong><?= $req_returned_n; ?></strong> new notifications.
                      </p>
                   </li>
                   <li>
@@ -95,8 +132,10 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                            <a href="#">
 
                               <?php
-                              $check_request = mysqli_query($con, "select status_changed_by,name,status from new_case_details where status LIKE 'Request Returned'");
-                              while ($check = mysqli_fetch_assoc($check_request)) {
+                              // Only load list rows when there are items (LIMIT keeps page light)
+                              if ($req_returned_n > 0) {
+                                 $check_request = mysqli_query($con, "select status_changed_by,name,status from new_case_details where status LIKE 'Request Returned' LIMIT 25");
+                                 while ($check = mysqli_fetch_assoc($check_request)) {
                                  ?>
 
                                  <span class="line">
@@ -112,6 +151,7 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                                     </strong>
                                  </span>
                                  <?php
+                                 }
                               }
                               ?>
                               <!-- <span class="line small">
@@ -131,18 +171,12 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
 
          <ul class="user-info pull-left pull-right-xs pull-none-xsm">
             <li class="notifications dropdown">
-               <?php
-               $check_request = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as requests from new_case_details where status LIKE  'Request Delete'"));
-               ?>
                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                  <i class="entypo-mail"></i> <span class="badge badge-info"><?= $check_request['requests']; ?></span> </a>
+                  <i class="entypo-mail"></i> <span class="badge badge-info"><?= $req_delete_n; ?></span> </a>
                <ul class="dropdown-menu">
                   <li class="top">
-                     <?php
-                     $check_request = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as requests from new_case_details where status LIKE  'Request Delete'"));
-                     ?>
                      <p class="small">
-                        You have <strong><?= $check_request['requests']; ?></strong> new notifications.
+                        You have <strong><?= $req_delete_n; ?></strong> new notifications.
                      </p>
                   </li>
                   <li>
@@ -152,8 +186,9 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                            <a href="#">
 
                               <?php
-                              $check_request = mysqli_query($con, "select status_changed_by,name,status from new_case_details where status LIKE 'Request Delete'");
-                              while ($check = mysqli_fetch_assoc($check_request)) {
+                              if ($req_delete_n > 0) {
+                                 $check_request = mysqli_query($con, "select status_changed_by,name,status from new_case_details where status LIKE 'Request Delete' LIMIT 25");
+                                 while ($check = mysqli_fetch_assoc($check_request)) {
                                  ?>
 
                                  <span class="line">
@@ -163,6 +198,7 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                                     </strong>
                                  </span>
                                  <?php
+                                 }
                               }
                               ?>
                               <!-- <span class="line small">
@@ -182,32 +218,13 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
 
          <ul class="user-info pull-left pull-right-xs pull-none-xsm">
             <li class="notifications dropdown">
-               <?php
-               $check_request = mysqli_fetch_assoc(mysqli_query($con, "SELECT count(id) as appointment_not_applied
-                                            FROM new_case_details
-                                            WHERE 
-                                                (appointment_date IS NULL OR appointment_date = '')
-                                                AND work_permit_receiving_date IS NOT NULL 
-                                                AND work_permit_receiving_date != ''
-                                                AND work_permit_receiving_date <= CURDATE() - INTERVAL 30 DAY AND country = '$country' AND status NOT IN ('Returned','Return From Embassy','Fly')
-                                            "));
-               ?>
                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                   <i class="entypo-mail"></i> <span
-                     class="badge badge-info"><?= $check_request['appointment_not_applied']; ?></span> </a>
+                     class="badge badge-info"><?= $appt_n; ?></span> </a>
                <ul class="dropdown-menu">
                   <li class="top">
-                     <?php
-                     $check_request = mysqli_fetch_assoc(mysqli_query($con, "SELECT count(id) as appointment_not_applied
-                                            FROM new_case_details
-                                            WHERE 
-                                                (appointment_date IS NULL OR appointment_date = '')
-                                                AND work_permit_receiving_date IS NOT NULL 
-                                                AND work_permit_receiving_date != ''
-                                                AND work_permit_receiving_date <= CURDATE() - INTERVAL 30 DAY AND country = '$country' AND status NOT IN ('Returned','Return From Embassy','Fly')"));
-                     ?>
                      <p class="small">
-                        You have <strong><?= $check_request['appointment_not_applied']; ?></strong> new notifications.
+                        You have <strong><?= $appt_n; ?></strong> new notifications.
                      </p>
                   </li>
                   <li>
@@ -234,19 +251,13 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
 
          <ul class="user-info pull-left pull-right-xs pull-none-xsm">
             <li class="notifications dropdown">
-               <?php
-               $check_payment_hand_over = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as pending from payment_handed_over_to where approved='Pending'"));
-               ?>
                <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                   <i class="entypo-bag"></i> <span
-                     class="badge badge-info"><?= $check_payment_hand_over['pending']; ?></span> </a>
+                     class="badge badge-info"><?= $handover_n; ?></span> </a>
                <ul class="dropdown-menu">
                   <li class="top">
-                     <?php
-                     $check_payment_hand_over = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as pending from payment_handed_over_to where approved='Pending'"));
-                     ?>
                      <p class="small">
-                        You have <strong><?= $check_payment_hand_over['pending']; ?></strong> new notifications.
+                        You have <strong><?= $handover_n; ?></strong> new notifications.
                      </p>
                   </li>
                   <li>
@@ -256,8 +267,9 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                            <a href="#">
 
                               <?php
-                              $check_payment_hand_over = mysqli_query($con, "select * from payment_handed_over_to where approved='Pending'");
-                              while ($check = mysqli_fetch_assoc($check_payment_hand_over)) {
+                              if ($handover_n > 0) {
+                                 $check_payment_hand_over = mysqli_query($con, "select * from payment_handed_over_to where approved='Pending' LIMIT 25");
+                                 while ($check = mysqli_fetch_assoc($check_payment_hand_over)) {
 
                                  $cash_given_date = $check['given_date'];// Example date in Y-m-d format
                            
@@ -274,6 +286,7 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                                     </strong>
                                  </span>
                                  <?php
+                                 }
                               }
                               ?>
                               <!-- <span class="line small">
@@ -358,16 +371,15 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                      <ul class="dropdown-menu-list scroller" id='requests'>
 
                         <?php
-
-                        $country = mysqli_real_escape_string($con, $_SESSION['country']);
-
-                        $payment_check = mysqli_query($con, "
+                        if ((int) $payment_no_entered_cases['payment_no_entered_cases'] > 0) {
+                           $payment_check = mysqli_query($con, "
                            SELECT ncd.id, ncd.name, ncd.care_of, ncd.status FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Returned', 'Fly', 'Return from Embassy') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '')
                            AND p.emp_id IS NULL
-                           AND ncd.country = '$country'
+                           AND ncd.country = '$country_esc'
+                           LIMIT 25
                         ");
 
-                        while ($payment_not_enter = mysqli_fetch_assoc($payment_check)) {
+                           while ($payment_not_enter = mysqli_fetch_assoc($payment_check)) {
                            ?>
                            <li class="unread notification-success"
                               style="display:flex;align-items:center;justify-content:space-between;margin: 0 10px 0 10px">
@@ -378,8 +390,8 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                               </a>
                            </li>
                            <?php
+                           }
                         }
-
                         ?>
 
 
@@ -408,14 +420,13 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                      <ul class="dropdown-menu-list scroller" id='requests'>
 
                         <?php
-
-                        $country = mysqli_real_escape_string($con, $_SESSION['country']);
-
-                        $second_payment_check = mysqli_query($con, "
-                           SELECT ncd.id, ncd.name, ncd.care_of, ncd.status FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Applied', 'Ready To Apply', 'Returned','Return From Embassy','Appointment Applied','Fly') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.second_payment IS NULL OR p.second_payment = '') and ncd.country = '$country'
+                        if ((int) $second_payment_no_entered_cases['second_payment_no_entered_cases'] > 0) {
+                           $second_payment_check = mysqli_query($con, "
+                           SELECT ncd.id, ncd.name, ncd.care_of, ncd.status FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status NOT IN ('Applied', 'Ready To Apply', 'Returned','Return From Embassy','Appointment Applied','Fly') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.second_payment IS NULL OR p.second_payment = '') and ncd.country = '$country_esc'
+                           LIMIT 25
                         ");
 
-                        while ($second_payment_not_enter = mysqli_fetch_assoc($second_payment_check)) {
+                           while ($second_payment_not_enter = mysqli_fetch_assoc($second_payment_check)) {
                            ?>
                            <li class="unread notification-success"
                               style="display:flex;align-items:center;justify-content:space-between;margin: 0 10px 0 10px">
@@ -426,8 +437,8 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                               </a>
                            </li>
                            <?php
+                           }
                         }
-
                         ?>
 
 
@@ -456,14 +467,13 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                      <ul class="dropdown-menu-list scroller" id='requests'>
 
                         <?php
-
-                        $country = mysqli_real_escape_string($con, $_SESSION['country']);
-
-                        $final_payment_check = mysqli_query($con, "
-                           SELECT ncd.id, ncd.name, ncd.care_of, ncd.status FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status IN ('Visa Issued') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.final_payment IS NULL OR p.final_payment = '') and ncd.country = '$country'
+                        if ((int) $final_payment_no_entered_cases['final_payment_no_entered_cases'] > 0) {
+                           $final_payment_check = mysqli_query($con, "
+                           SELECT ncd.id, ncd.name, ncd.care_of, ncd.status FROM new_case_details AS ncd LEFT JOIN payments AS p ON ncd.id = p.emp_id WHERE ncd.status IN ('Visa Issued') AND (ncd.missing_documents IS NULL OR ncd.missing_documents = '') AND (p.final_payment IS NULL OR p.final_payment = '') and ncd.country = '$country_esc'
+                           LIMIT 25
                         ");
 
-                        while ($final_payment_not_enter = mysqli_fetch_assoc($final_payment_check)) {
+                           while ($final_payment_not_enter = mysqli_fetch_assoc($final_payment_check)) {
                            ?>
                            <li class="unread notification-success"
                               style="display:flex;align-items:center;justify-content:space-between;margin: 0 10px 0 10px">
@@ -474,8 +484,8 @@ $final_payment_no_entered_cases = mysqli_fetch_assoc(mysqli_query(
                               </a>
                            </li>
                            <?php
+                           }
                         }
-
                         ?>
 
 

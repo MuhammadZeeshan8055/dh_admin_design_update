@@ -151,44 +151,34 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
                   </div>
                
                   <div class="col-sm-4 col-xs-6">
-                  <div class="tile-stats tile-green" onclick="window.location='status_wise_data?status=Work Permit Issued'"
-                     style="cursor:pointer">
+                  <div class="tile-stats tile-green" onclick="window.location='status_wise_data?status=<?= urlencode('Work Permit Issued') ?>'" style="cursor:pointer">
                      <?php
                      $work_permit_issued = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS work_permit_issued FROM new_case_details WHERE status IN ('Work Permit Issued', 'Appointment Applied') AND country='$_SESSION[country]'"));
-
-                     $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT status, COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Work Permit Issued' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
+                     $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Work Permit Issued' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
                      ?>
                      <div class="icon"><i class="entypo-rss"></i></div>
-                     <div class="num" data-start="0" data-end="<?= $work_permit_issued['work_permit_issued']; ?>"
-                        data-postfix data-duration="500" data-delay="1800">0</div>
+                     <div class="num" data-start="0" data-end="<?= $work_permit_issued['work_permit_issued']; ?>" data-postfix data-duration="500" data-delay="1800">0</div>
                      <h3>Work Permit Issued
-                        <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=Work Permit Issued';"
-                           style="font-size:1.1rem; float:right; margin-top:3px; cursor:pointer;">
+                        <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=<?= urlencode('Work Permit Issued') ?>';" style="font-size:1.1rem; display:block; margin-top:5px; cursor:pointer;">
                            Waiting For Appointment (<?= $waiting_for_appointments['waiting_for_appointments']; ?>)
                         </span>
                      </h3>
                   </div>
                </div>
                <div class="col-sm-4 col-xs-6">
-                  
-                     <div class="tile-stats tile-aqua" onclick="window.location='status_wise_data?status=Appointment Applied'">
+                     <div class="tile-stats tile-aqua" onclick="window.location='status_wise_data?status=<?= urlencode('Appointment Applied') ?>'" style="cursor:pointer">
                         <?php
-                        $appointment_applied = mysqli_fetch_assoc(mysqli_query($con, "select status,count(id) as appointment_applied from new_case_details where status='Appointment Applied' and country='$_SESSION[country]'"));
-                        $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT status, COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Appointment Applied' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
-                     
+                        $appointment_applied = mysqli_fetch_assoc(mysqli_query($con, "select count(id) as appointment_applied from new_case_details where status='Appointment Applied' and country='$_SESSION[country]'"));
+                        $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Appointment Applied' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
                         ?>
                         <div class="icon"><i class="entypo-rss"></i></div>
-                        <div class="num" data-start="0" data-end="<?= $appointment_applied['appointment_applied']; ?>"
-                           data-postfix data-duration="500" data-delay="1800">0</div>
+                        <div class="num" data-start="0" data-end="<?= $appointment_applied['appointment_applied']; ?>" data-postfix data-duration="500" data-delay="1800">0</div>
                         <h3>Appointment Applied
-                           <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=Appointment Applied';"
-                              style="font-size:1.1rem; float:right; margin-top:3px; cursor:pointer;">
+                           <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=<?= urlencode('Appointment Applied') ?>';" style="font-size:1.1rem; display:block; margin-top:5px; cursor:pointer;">
                               Waiting For Appointment (<?= $waiting_for_appointments['waiting_for_appointments']; ?>)
                            </span>
                         </h3>
-
                      </div>
-
                </div>
                   <div class="col-sm-4 col-xs-6">
                      <a href="status_wise_data?status=Visa Issued">

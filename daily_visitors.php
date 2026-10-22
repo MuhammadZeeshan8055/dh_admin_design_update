@@ -250,9 +250,7 @@ include('attendance_system/database.php');
     <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
     <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script>
     <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
-    <script src="assets/js/neon-chat.js" id="script-resource-10"></script>
     <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
-    <script src="assets/js/neon-demo.js" id="script-resource-12"></script>
 
     <script>
         var lookupTimer = null;
@@ -385,6 +383,16 @@ include('attendance_system/database.php');
         
         function loadVisitors() {
             var date = $('#filter_date').val();
+
+            // Remember page + search before refresh (so they stay the same)
+            var currentPage = 0;
+            var currentSearch = '';
+            if ($.fn.DataTable.isDataTable('#table-4')) {
+                var oldTable = $('#table-4').DataTable();
+                currentPage = oldTable.page();
+                currentSearch = oldTable.search();
+            }
+
             $.ajax({
                 url: 'daily_visitors_ajax',
                 type: 'POST',
@@ -429,6 +437,20 @@ include('attendance_system/database.php');
                     }
                     $('#daily_visitors_tbody').html(rows);
                     initVisitorsTable();
+
+                    // Restore search first, then page
+                    if (visitorsTable) {
+                        if (currentSearch) {
+                            visitorsTable.search(currentSearch).draw(false);
+                        }
+                        var totalPages = visitorsTable.page.info().pages;
+                        if (currentPage >= totalPages) {
+                            currentPage = totalPages > 0 ? totalPages - 1 : 0;
+                        }
+                        if (currentPage > 0) {
+                            visitorsTable.page(currentPage).draw(false);
+                        }
+                    }
                 },
                 error: function() {
                     destroyVisitorsTable();
