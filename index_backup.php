@@ -1,4 +1,4 @@
-<?php
+﻿<?php
    include('database/db_connection.php');
    include('session.php');
 
@@ -875,11 +875,7 @@ $alltime_date 		= '1969-12-31/'.date('Y-12-31');
       <script src="assets/js/raphael-min.js" id="script-resource-13"></script> 
       <script src="assets/js/morris.min.js" id="script-resource-14"></script> 
       <script src="assets/js/toastr.js" id="script-resource-15"></script> 
-      <script src="assets/js/neon-chat.js" id="script-resource-16"></script>  
-      <script src="assets/js/neon-custom.js" id="script-resource-17"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-18"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-19"></script> 
-     
-   </body>
+<script src="assets/js/neon-custom.js" id="script-resource-17"></script>  
+</body>
 </html>
 

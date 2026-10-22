@@ -1,4 +1,4 @@
-<?php
+﻿<?php
    include('database/db_connection.php');
    include('session.php');
    include('attendance_system/database.php');
@@ -259,11 +259,8 @@
         <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
         <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script>
         <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
-        <script src="assets/js/neon-chat.js" id="script-resource-10"></script>
-        <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
-        <script src="assets/js/neon-demo.js" id="script-resource-12"></script>
-
-        <script>
+<script src="assets/js/neon-custom.js" id="script-resource-11"></script>
+<script>
             // In your Javascript (external .js resource or <script> tag)
             $(document).ready(function() {
                 $('.js-example-basic-single').select2();
@@ -304,7 +301,7 @@
                 let monthDiff = today.getMonth() - dob.getMonth();
                 let dayDiff = today.getDate() - dob.getDate();
     
-                // If birthday not reached yet this year → subtract 1
+                // If birthday not reached yet this year â†’ subtract 1
                 if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
                       age--;
                 }

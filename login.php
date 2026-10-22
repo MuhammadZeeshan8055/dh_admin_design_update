@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
    session_start();
    include('database/db_connection.php');
@@ -128,8 +128,5 @@
       <script src="assets/js/jquery.validate.min.js" id="script-resource-8"></script> 
       <script src="assets/js/neon-login.js" id="script-resource-9"></script>  
       <script src="assets/js/neon-custom.js" id="script-resource-10"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-11"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-12"></script> 
-      
-   </body>
+</body>
 </html>

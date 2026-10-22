@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     include('database/db_connection.php');
     include('session.php');
         
@@ -222,10 +222,6 @@
       <script src="assets/js/resizeable.js" id="script-resource-5"></script> 
       <script src="assets/js/neon-api.js" id="script-resource-6"></script> 
       <script src="assets/js/cookies.min.js" id="script-resource-7"></script> 
-      <script src="assets/js/neon-chat.js" id="script-resource-8"></script>  
-      <script src="assets/js/neon-custom.js" id="script-resource-9"></script>  
-      <script src="assets/js/neon-demo.js" id="script-resource-10"></script> 
-      <script src="assets/js/neon-skins.js" id="script-resource-11"></script> 
-     
-   </body>
+<script src="assets/js/neon-custom.js" id="script-resource-9"></script>  
+</body>
 </html>

@@ -1,10 +1,10 @@
-<?php
+﻿<?php
 include('database/db_connection.php');
 include('session.php');
 
 $editData = null; // store job row if editing
 
-// ✅ DELETE functionality
+// âœ… DELETE functionality
 if (isset($_GET['id']) && $_GET['type'] == 'delete') {
     $id = intval($_GET['id']);
     mysqli_query($con, "DELETE FROM new_jobs WHERE id='$id'") or die("query Unsuccessful");
@@ -12,14 +12,14 @@ if (isset($_GET['id']) && $_GET['type'] == 'delete') {
     exit;
 }
 
-// ✅ EDIT: load record for pre-fill
+// âœ… EDIT: load record for pre-fill
 if (isset($_GET['id']) && $_GET['type'] == 'edit') {
     $id = intval($_GET['id']);
     $result = mysqli_query($con, "SELECT * FROM new_jobs WHERE id='$id'");
     $editData = mysqli_fetch_assoc($result);
 }
 
-// ✅ INSERT or UPDATE
+// âœ… INSERT or UPDATE
 if (isset($_POST['submit'])) {
     $job_description = mysqli_real_escape_string($con, $_POST['job_description']);
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
@@ -50,10 +50,10 @@ if (isset($_POST['submit'])) {
     
 
     if ($id > 0) {
-        // ✅ UPDATE existing record
+        // âœ… UPDATE existing record
         $sql = "UPDATE new_jobs SET job_banner_image='$name', job_description='$job_description' WHERE id='$id'";
     } else {
-        // ✅ INSERT new record
+        // âœ… INSERT new record
         $sql = "INSERT INTO new_jobs (job_banner_image, job_description) VALUES ('$name', '$job_description')";
     }
 
@@ -258,12 +258,8 @@ if (isset($_POST['submit'])) {
     <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
     <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script>
     <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
-    <script src="assets/js/neon-chat.js" id="script-resource-10"></script>
-    <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
-    <script src="assets/js/neon-demo.js" id="script-resource-12"></script>
-    <script src="assets/js/neon-skins.js" id="script-resource-13"></script>
-
-    <!-- Include the Quill library -->
+<script src="assets/js/neon-custom.js" id="script-resource-11"></script>
+<!-- Include the Quill library -->
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
     <!-- Initialize Quill editor -->

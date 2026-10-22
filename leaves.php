@@ -1,4 +1,4 @@
-<?php
+﻿<?php
     include('database/db_connection.php');
     include('session.php');
     include('attendance_system/database.php');
@@ -143,11 +143,7 @@
         <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
         <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script>
         <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
-        <script src="assets/js/neon-chat.js" id="script-resource-10"></script>
-        <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
-        <script src="assets/js/neon-demo.js" id="script-resource-12"></script>
-
-
+<script src="assets/js/neon-custom.js" id="script-resource-11"></script>
 </body>
 
 </html>

@@ -729,8 +729,6 @@ if (!empty($result)) {
         
         
         <link rel="stylesheet" href="assets/js/datatables/datatables.css" id="style-resource-1">
-        <link rel="stylesheet" href="assets/js/select2/select2-bootstrap.css" id="style-resource-2">
-        <link rel="stylesheet" href="assets/js/select2/select2.css" id="style-resource-3">
         <script src="assets/js/gsap/TweenMax.min.js" id="script-resource-1"></script>
         <script src="assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js" id="script-resource-2"></script>
         <script src="assets/js/bootstrap.js" id="script-resource-3"></script>
@@ -739,7 +737,6 @@ if (!empty($result)) {
         <script src="assets/js/neon-api.js" id="script-resource-6"></script>
         <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
         <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script>
-        <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
         <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
 
         <script>

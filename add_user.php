@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include('database/db_connection.php');
 include('session.php');
 
@@ -118,7 +118,7 @@ if (isset($_POST['update_user'])) {
    $check_query = mysqli_query($con, "SELECT id FROM attendance_employee_info WHERE emp_id = '$emp_id'");
 
    if (mysqli_num_rows($check_query) > 0) {
-      // Record exists → Update
+      // Record exists â†’ Update
       $update = mysqli_query($con, "UPDATE attendance_employee_info SET
                   name = '$firstname $lastname',
                   company = '$attendance_company_name',
@@ -137,7 +137,7 @@ if (isset($_POST['update_user'])) {
                   WHERE emp_id = '$emp_id'
                ");
    } else {
-      // No record → Insert
+      // No record â†’ Insert
       $insert = mysqli_query($con, "INSERT INTO attendance_employee_info (
                   emp_id, name, company, designation, date_of_joining, salary, currency,
                   cnic_passport, permanent_address, country, phone_1, phone_2,
@@ -716,11 +716,7 @@ if (isset($_POST['update_user'])) {
    <script src="assets/js/neon-api.js" id="script-resource-6"></script>
    <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
    <script src="assets/js/bootstrap-switch.min.js" id="script-resource-8"></script>
-   <script src="assets/js/neon-chat.js" id="script-resource-9"></script>
-   <script src="assets/js/neon-custom.js" id="script-resource-10"></script>
-   <script src="assets/js/neon-demo.js" id="script-resource-11"></script>
-   <script src="assets/js/neon-skins.js" id="script-resource-12"></script>
-
+<script src="assets/js/neon-custom.js" id="script-resource-10"></script>
 </body>
 
 </html>

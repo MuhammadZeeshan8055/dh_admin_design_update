@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include('database/db_connection.php');
 include('session.php');
 
@@ -492,7 +492,7 @@ $lastyear_date 		= date('Y-01-01', strtotime(date('Y-01-01')."-1 year")).'/'.dat
                                                     </span>
                                                     <i class="entypo-right-bold"></i>
                                                     <span class="new-value">
-                                                        <?= $row['new_value'] ? htmlspecialchars($row['new_value']) : '<em>—</em>'; ?>
+                                                        <?= $row['new_value'] ? htmlspecialchars($row['new_value']) : '<em>â€”</em>'; ?>
                                                     </span>
                                                 </div>
                                             </td>
@@ -519,10 +519,8 @@ $lastyear_date 		= date('Y-01-01', strtotime(date('Y-01-01')."-1 year")).'/'.dat
     <script src="assets/js/neon-api.js" id="script-resource-6"></script>
     <script src="assets/js/cookies.min.js" id="script-resource-7"></script>
     <script src="assets/js/bootstrap-switch.min.js" id="script-resource-8"></script>
-    <script src="assets/js/neon-chat.js" id="script-resource-9"></script>
-    <script src="assets/js/neon-custom.js" id="script-resource-10"></script>
-    <script src="assets/js/neon-demo.js" id="script-resource-11"></script>
-    <link rel="stylesheet" href="assets/js/select2/select2-bootstrap.css" id="style-resource-2">
+<script src="assets/js/neon-custom.js" id="script-resource-10"></script>
+<link rel="stylesheet" href="assets/js/select2/select2-bootstrap.css" id="style-resource-2">
     <link rel="stylesheet" href="assets/js/select2/select2.css" id="style-resource-3">
     <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script>
 
