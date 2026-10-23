@@ -144,49 +144,221 @@
          z-index: 2500;
          display: none;
          overflow-y: auto;
-         padding: 24px 0 40px;
+         padding: 14px 0 20px;
          }
-         #modal-form {
-            background: #fff;
-            width: 90%;
+         #modal-form.dh-edit-modal {
+            background: var(--dh-surface-solid, #fff);
+            color: var(--dh-text, #1a2b3c);
+            width: calc(100% - 32px);
+            max-width: 1580px;
+            max-height: calc(100vh - 36px);
             position: relative;
             top: 0;
-            left: calc(50% - 45%);
-            padding: 0 15px 20px;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 18px 48px rgba(7, 31, 47, 0.35);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0 16px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--dh-border, rgba(0, 175, 235, .18));
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(7, 31, 47, 0.38);
          }
          #modal-form h2{
-         margin: 0 -15px 18px;
-         padding: 16px 52px 16px 20px;
-         border-bottom: 0;
-         color: rgba(247, 251, 253, 0.96);
-         font-size: 18px;
-         font-weight: 600;
-         letter-spacing: 0.01em;
-         background:
-            radial-gradient(circle at 92% 14%, rgba(216, 186, 111, .14), transparent 245px),
-            linear-gradient(110deg, #254260 0%, #176e91 54%, #267d98 100%);
-         box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
+            margin: 0 -16px 12px;
+            padding: 14px 48px 14px 16px;
+            border-bottom: 0;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            background: linear-gradient(110deg, #254260 0%, #176e91 54%, #267d98 100%);
          }
          #modal-form input[type = "text"]{
-         width: 100%;
+            width: 100%;
+         }
+         .dh-edit-modal table {
+            display: block;
+            width: 100%;
+         }
+         .dh-edit-modal table > tbody,
+         .dh-edit-modal table > tbody > tr,
+         .dh-edit-modal table > tbody > tr > td {
+            display: block;
+            width: 100%;
+         }
+         .dh-edit-modal .row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px 14px;
+            align-items: start;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-bottom: 8px !important;
+         }
+         .dh-edit-modal .row:before,
+         .dh-edit-modal .row:after {
+            display: none !important;
+         }
+         .dh-edit-modal .row > [class*="col-md-"] {
+            float: none;
+            width: auto;
+            min-width: 0;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+         }
+         .dh-edit-modal .row > .col-md-12 {
+            grid-column: 1 / -1;
+         }
+         .dh-edit-modal .row > .col-md-6 {
+            grid-column: span 2;
+         }
+         .dh-edit-modal .form-group {
+            margin-bottom: 4px !important;
+         }
+         .dh-edit-modal label,
+         .dh-edit-modal .control-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--dh-text-muted, #5a6f82);
+         }
+         .dh-edit-modal .form-control,
+         .dh-edit-modal textarea {
+            border-radius: 6px !important;
+            border: 1px solid var(--dh-border, rgba(0, 175, 235, .22)) !important;
+            background: #f7fafc !important;
+            box-shadow: none !important;
+            min-height: 34px;
+            height: 34px;
+            padding: 5px 9px !important;
+            font-size: 13px;
+            line-height: 1.3;
+         }
+         .dh-edit-modal select.form-control {
+            height: 34px;
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
+         }
+         .dh-edit-modal .form-control:focus,
+         .dh-edit-modal textarea:focus {
+            border-color: #00afeb !important;
+            box-shadow: 0 0 0 2px rgba(0, 175, 235, .14) !important;
+            outline: 0;
+         }
+         .dh-edit-modal textarea {
+            display: block;
+            width: 100%;
+            min-height: 64px;
+            height: auto;
+            resize: vertical;
+         }
+         .dh-edit-modal br {
+            display: none;
+         }
+         .dh-edit-modal input[type="checkbox"] {
+            margin: 2px 6px 6px 0;
+            vertical-align: middle;
+         }
+         .dh-edit-modal #edit-submit {
+            min-width: 130px;
+            margin-top: 10px;
+            padding: 8px 20px;
+            border: 0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #2f9e6b, #247a54);
+            box-shadow: 0 4px 12px rgba(47, 158, 107, 0.22);
+            cursor: pointer;
+         }
+         .dh-edit-modal #edit-submit:hover {
+            filter: brightness(1.05);
+         }
+         #edit-form-body {
+            padding: 0;
+         }
+         #dh-toast {
+            display: none;
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 4000;
+            min-width: 260px;
+            max-width: 360px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: #1f6b4a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+         }
+         [data-theme="dark"] .dh-edit-modal {
+            color: #e8f1f8 !important;
+            background: #162434 !important;
+            border-color: rgba(86, 201, 246, .22) !important;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+         }
+         [data-theme="dark"] .dh-edit-modal label,
+         [data-theme="dark"] .dh-edit-modal .control-label {
+            color: #c8d8e5 !important;
+         }
+         [data-theme="dark"] .dh-edit-modal .form-control,
+         [data-theme="dark"] .dh-edit-modal textarea {
+            color: #e8f1f8 !important;
+            background: #101d2a !important;
+            border-color: rgba(86, 201, 246, .22) !important;
+         }
+         [data-theme="dark"] .dh-edit-modal .form-control:focus,
+         [data-theme="dark"] .dh-edit-modal textarea:focus {
+            border-color: #00afeb !important;
+            box-shadow: 0 0 0 3px rgba(0, 175, 235, .14) !important;
+            outline: 0;
+         }
+         [data-theme="dark"] .dh-edit-modal input[readonly] {
+            color: #aebfcd !important;
+            background: #1b2a38 !important;
+         }
+         @media (max-width: 1100px) {
+            .dh-edit-modal .row {
+               grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+         }
+         @media (max-width: 640px) {
+            #modal {
+               padding: 6px 0 10px;
+            }
+            #modal-form.dh-edit-modal {
+               width: calc(100% - 12px);
+               max-height: calc(100vh - 12px);
+               padding: 0 8px 10px;
+            }
+            #modal-form h2 {
+               margin: 0 -8px 8px;
+               padding: 10px 40px 10px 10px;
+            }
+            .dh-edit-modal .row {
+               grid-template-columns: 1fr;
+               gap: 4px;
+            }
          }
          #close-btn{
-         background: rgba(255, 255, 255, 0.14);
-         color: #fff;
-         width: 32px;
-         height: 32px;
-         line-height: 32px;
-         text-align: center;
-         border-radius: 50%;
-         border: 1px solid rgba(255, 255, 255, 0.22);
-         position: absolute;
-         top: 12px;
-         right: 14px;
-         cursor: pointer;
-         z-index: 2;
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            cursor: pointer;
+            z-index: 2;
          }
          #close-btn2,
          #close-btn3{
@@ -312,16 +484,53 @@
             
            
             <h3>New Case Details</h3>
-            <br/> 
+            <p class="text-muted" id="dh-table-loading">Loading records…</p>
 
             <div id="error-message"></div>
             <div id="success-message"></div>
-            <div id="search-bar">
-               <label>Search :</label>
-               <input type="search" id="search" class="form-control mb-4" autocomplete="off">
-            </div>
-            <br>
-            <table class="table table-bordered datatable table" id="table-4">
+            <div id="dh-toast"></div>
+
+            <table class="table table-bordered datatable table-3" id="table-4" style="width:100%">
+               <thead>
+                  <tr>
+                     <th>S.no</th>
+                     <th>Name</th>
+                     <th>Father Name</th>
+                     <th>PP No</th>
+                     <th>PP Expiry</th>
+                     <th>Tracking Id</th>
+                     <th>New Case Date</th>
+                     <th>Date Of Birth</th>
+                     <th>Age</th>
+                     <th>Care Of</th>
+                     <th>Mobile No 1</th>
+                     <th>Mobile No 2</th>
+                     <th>Missing Documents</th>
+                     <th>Country</th>
+                     <th>Apply Date</th>
+                     <th>First Character Expiry</th>
+                     <th>Second Character Expiry</th>
+                     <th>Online Submission Date</th>
+                     <th>Physical Submission Date</th>
+                     <th>Work Permit Receiving Date</th>
+                     <th>Appointment Date</th>
+                     <th>Visa Issue Date</th>
+                     <th>Visa Expiry Date</th>
+                     <th>Company Name</th>
+                     <th>Trade</th>
+                     <th>Entered By</th>
+                     <th>Updated By</th>
+                     <th>Passport Returned Date</th>
+                     <th>Status</th>
+                     <?php if (($can_update ?? '') === 'on'): ?>
+                     <th>Edit</th>
+                     <?php endif; ?>
+                     <?php if (($can_delete ?? '') === 'on'): ?>
+                     <th>Delete</th>
+                     <?php endif; ?>
+                  </tr>
+               </thead>
+               <tbody></tbody>
             </table>
             
             <br/>  
@@ -335,10 +544,9 @@
       </div>
 
          <div id="modal">
-            <div id="modal-form">
-               <h2>Edit New Case Details Form</h2>
-               <table cellpadding="10px" width="100%">
-               </table>
+            <div id="modal-form" class="dh-edit-modal" role="dialog" aria-modal="true" aria-labelledby="dh-edit-modal-title">
+               <h2 id="dh-edit-modal-title">Edit New Case Details Form</h2>
+               <div id="edit-form-body">Loading...</div>
                <div id="close-btn">X</div>
             </div>
          </div>
@@ -389,73 +597,66 @@
       <script src="assets/js/cookies.min.js" id="script-resource-7"></script> 
       <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script> 
       <script src="assets/js/select2/select2.min.js" id="script-resource-9"></script> 
-      <script src="assets/js/neon-custom.js" id="script-resource-11"></script> 
-       
-   <script type="text/javascript" src="js/jquery.js"></script>
-
-   </body>
-   
- <style>
-     .loader {
-        text-align: center;
-        padding: 20px;
-        font-size: 18px;
-    }
-    
-    .loader::after {
-        content: "";
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        border: 4px solid #3498db;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-    
-    @keyframes spin {
-        100% { transform: rotate(360deg); }
-    }
-
- </style>
-
+      <script src="assets/js/neon-custom.js" id="script-resource-11"></script>
+      <style>
+         #table-4_wrapper .dataTables_processing {
+            top: 80px !important;
+            margin-top: 0 !important;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px 18px;
+         }
+      </style>
 <script>
    $(document).ready(function(){
-        // Load Table Records
-        function loadTable() {
-            $(".table").html('<div class="loader">Loading Data...</div>'); // Show loader before AJAX call
-        
-            $.ajax({
-                url: "new_cases_data_load",
-                type: "POST",
-                success: function (data) {
-                    $(".table").html(data); // Replace loader with table data
+        var casesTable = null;
+
+        function showToast(message) {
+            $("#dh-toast").text(message).stop(true, true).fadeIn(200);
+            setTimeout(function () {
+                $("#dh-toast").fadeOut(400);
+            }, 2500);
+        }
+
+        // Fast DataTable load (JSON)
+        if ($.fn.DataTable) {
+            casesTable = $("#table-4").DataTable({
+                ajax: {
+                    url: "new_cases_data_load.php",
+                    dataSrc: "data",
+                    cache: false
                 },
-                error: function () {
-                    $(".table").html("<p>Error loading data.</p>"); // Handle errors
+                deferRender: true,
+                pageLength: 25,
+                order: [],
+                processing: true,
+                initComplete: function () {
+                    $("#dh-table-loading").hide();
                 }
             });
         }
-        
-        // Load Table Records on Page Load
-        loadTable();
 
-
+        function reloadTable() {
+            if (casesTable) {
+                casesTable.ajax.reload(null, false);
+            }
+        }
 
         //Delete Records
         $(document).on("click",".delete-btn", function(){
         if(confirm("Do you really want to delete this record ?")){
             var Id = $(this).data("id");
-            var element = this;
             
             $.ajax({
             url: "request_delete_new_case_details",
             type : "POST",
             data : {id : Id},
             success : function(data){
-                if(data == 1){
-                    $(element).closest("tr").fadeOut();
-                    loadTable(); // Load Table Records on Page Load
+                if($.trim(data) == 1){
+                    reloadTable();
+                    showToast("Record deleted");
                 }else{
                     $("#error-message").html("Can't Delete Record.").slideDown();
                     $("#success-message").slideUp();
@@ -465,10 +666,8 @@
         }
         });
 
-
-        //show company assign modal box
-         
-         $(document).on("click","#show_company", function(){
+        // Show company modal
+         $(document).on("click",".show_company", function(){
             $("#modal3").show();
             var Id = $(this).data("id");
 
@@ -482,11 +681,8 @@
             })
          });
 
-
-
-
-         //Assign Show Modal Box
-         $(document).on("click","#assign_company", function(){
+         // Assign company modal
+         $(document).on("click",".assign_company", function(){
             $("#modal2").show();
             var Id = $(this).data("id");
 
@@ -501,8 +697,6 @@
          });
 
          $(document).on("click","#edit-assign-update", function(){
-
-            
             var id = $("#edit-id").val();
             var company_name = $("#company_name").val();
             var trade = $("#trade").val();
@@ -516,19 +710,16 @@
                type : "POST",
                data : {id: id, company_name: company_name, trade: trade,e_no: e_no,visa_no: visa_no,sponsor_id: sponsor_id, miscellaneous: miscellaneous},
                success: function(data) {
-                  if(data == 1){
+                  if($.trim(data) == 1){
                      $("#modal3").hide();
-                     loadTable();
+                     reloadTable();
+                     showToast("Info updated successfully");
                   }
                }
             })
          });
 
-
-
          $(document).on("click","#edit-assign", function(){
-
-            
             var id = $("#edit-id").val();
             var company_name = $("#company_name").val();
             var trade = $("#trade").val();
@@ -536,26 +727,25 @@
             var visa_no = $("#visa_no").val();
             var sponsor_id = $("#sponsor_id").val();
             var miscellaneous = $("#miscellaneous").val();
-            
 
             $.ajax({
                url: "assign_company",
                type : "POST",
                data : {id: id, company_name: company_name, trade: trade,e_no: e_no,visa_no: visa_no,sponsor_id: sponsor_id, miscellaneous: miscellaneous},
                success: function(data) {
-                  if(data == 1){
+                  if($.trim(data) == 1){
                      $("#modal2").hide();
-                     loadTable();
+                     reloadTable();
+                     showToast("Info updated successfully");
                   }
                }
             })
          });
 
-
-
-          //Show Modal Box
+          // Show Edit Modal
          $(document).on("click",".edit-btn", function(){
             $("#modal").show();
+            $("#edit-form-body").html("Loading...");
             var Id = $(this).data("eid");
 
             $.ajax({
@@ -563,28 +753,27 @@
             type: "POST",
             data: {id: Id },
             success: function(data) {
-               $("#modal-form table").html(data);
+               $("#edit-form-body").html(data);
+            },
+            error: function() {
+               $("#edit-form-body").html("Could not load this case.");
             }
             })
          });
 
-
-         //Hide Modal Box
          $("#close-btn").on("click",function(){
             $("#modal").hide();
          });
 
-         //Hide Modal Box
          $("#close-btn2").on("click",function(){
             $("#modal2").hide();
          });
 
-         //Hide Modal Box
          $("#close-btn3").on("click",function(){
             $("#modal3").hide();
          });
 
-         //Save Update Form
+         // Save Update Form (same fields / same URL as before)
          $(document).on("click","#edit-submit", function(){
             var id = $("#edit-id").val();
             var name = $("#name").val();
@@ -612,11 +801,12 @@
             var appointment_date = $("#appointment_date").val();
             var apply_date = $("#apply_date").val();
             var status = $("#status").val();
-            var visa_issue_date = $("#visa_issue_date").val();
-            var visa_expiry_date = $("#visa_expiry_date").val();
+            var visa_issue_date = $("#visa_issue_date").val() || "";
+            var visa_expiry_date = $("#visa_expiry_date").val() || "";
             var company_name = $("#company_name").val();
             var trade = $("#trade").val();
             var miscellaneous = $("#miscellaneous").val();
+            var comments = $("#comments").val();
             
             if (status === "Applied") {
                if (!company_name || company_name.trim() === "Select Company") {
@@ -624,11 +814,6 @@
                   return false;
                }
             }
-            
-            //comments
-            var comments = $("#comments").val();
-            
-            // alert(passport_returned_date);
 
             $.ajax({
                url: "new_case_update_details",
@@ -636,9 +821,11 @@
                data : {id: id, name: name, fname: fname, pp_no: pp_no, pp_expiry: pp_expiry,tracking_id: tracking_id,new_case_date:new_case_date,date_of_birth:date_of_birth,client_age:client_age,care_of:care_of,mobile_no_1:mobile_no_1,mobile_no_2:mobile_no_2,
                         missing_documents:missing_documents,docs_missing:docs_missing,passport_returned:passport_returned,passport_returned_description:passport_returned_description,passport_returned_date:passport_returned_date,country:country,first_character_expiry:first_character_expiry,second_character_expiry:second_character_expiry,online_submission_date:online_submission_date,physical_submission_date:physical_submission_date,work_permit_receiving_date:work_permit_receiving_date,appointment_date:appointment_date,apply_date:apply_date,status:status,visa_issue_date:visa_issue_date,visa_expiry_date:visa_expiry_date,company_name:company_name,trade:trade,miscellaneous:miscellaneous,comments:comments},
                success: function(data) {
-                  if (data == 1) {
+                  data = $.trim(data);
+                  if (data == "1") {
                      $("#modal").hide();
-                     loadTable();
+                     showToast("Info updated successfully");
+                     reloadTable();
                   }
                   else if (data == "PAYMENT_NOT_FOUND") {
                      alert("Advance payment is required before applying this status. Please add the payment to proceed.");
@@ -646,57 +833,31 @@
                   else if(data == "FULL_PAYMENT_RECORD_NOT_FOUND"){
                      alert("Full payment record is required before applying this status. Please add the payment to proceed.");
                   }
+                  else {
+                     alert("Update failed. Please try again.");
+                  }
                }
             })
          });
 
-
-         // Live Search
-         $("#search").on("keyup",function(){
-            var search_term = $(this).val();
-
-              
-            $.ajax({
-               url: "new_case_search",
-               type: "POST",
-               data : {search:search_term },
-               success: function(data) {
-               $(".table").html(data);
-               }
-            });
-         });
-         // Auto-fill expiry date when character_issue_date is selected
         $(document).on("change", "#first_character_issue_date", function() {
             var issueDate = new Date($(this).val());
             if (!isNaN(issueDate.getTime())) {
-                // Add 180 days to the issue date
                 var expiryDate = new Date(issueDate);
                 expiryDate.setDate(expiryDate.getDate() + 180);
-    
-                // Format the date as YYYY-MM-DD
-                var formattedExpiryDate = expiryDate.toISOString().split('T')[0];
-    
-                // Set the expiry date to the first_character_expiry and second_character_expiry fields
-                $("#first_character_expiry").val(formattedExpiryDate);
+                $("#first_character_expiry").val(expiryDate.toISOString().split('T')[0]);
             }
         });
         $(document).on("change", "#second_character_issue_date", function() {
             var issueDate = new Date($(this).val());
             if (!isNaN(issueDate.getTime())) {
-                // Add 180 days to the issue date
                 var expiryDate = new Date(issueDate);
                 expiryDate.setDate(expiryDate.getDate() + 180);
-    
-                // Format the date as YYYY-MM-DD
-                var formattedExpiryDate = expiryDate.toISOString().split('T')[0];
-    
-                // Set the expiry date to the first_character_expiry and second_character_expiry fields
-                $("#second_character_expiry").val(formattedExpiryDate);
+                $("#second_character_expiry").val(expiryDate.toISOString().split('T')[0]);
             }
         });
 
    });
 </script>
-
-
+</body>
 </html>

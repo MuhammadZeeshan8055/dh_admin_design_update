@@ -1,5 +1,29 @@
 <?php
 include('session.php');
+
+if (empty($_SESSION['dh_company_options'])) {
+    $company_html = '';
+    $company_list = mysqli_query($con, "SELECT company_name FROM company_list");
+    if ($company_list) {
+        while ($comp_name = mysqli_fetch_assoc($company_list)) {
+            $cn = htmlspecialchars($comp_name['company_name'], ENT_QUOTES, 'UTF-8');
+            $company_html .= "<option value='{$cn}'>{$cn}</option>";
+        }
+    }
+    $_SESSION['dh_company_options'] = $company_html;
+}
+if (empty($_SESSION['dh_trade_options'])) {
+    $trade_html = '';
+    $trade_list = mysqli_query($con, "SELECT trade FROM trade");
+    if ($trade_list) {
+        while ($trade_name = mysqli_fetch_assoc($trade_list)) {
+            $tn = htmlspecialchars($trade_name['trade'], ENT_QUOTES, 'UTF-8');
+            $trade_html .= "<option value='{$tn}'>{$tn}</option>";
+        }
+    }
+    $_SESSION['dh_trade_options'] = $trade_html;
+}
+session_write_close();
 ?>
 
 <style>
@@ -83,13 +107,13 @@ if(mysqli_num_rows($result) > 0 ){
                             <input type='text' readonly class='form-control' name='client_age' id='client_age' value='{$row["client_age"]}'> 
                         </div>
                     </div>
-                    
-                    ";
+                </div>
+                ";
 
                     $care_off_list=mysqli_query($con,"select name from care_off_persons");
 
                     $output.="
-                    
+                <div class='row'>
                     <div class='col-md-3'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Care of</label>
@@ -132,85 +156,21 @@ if(mysqli_num_rows($result) > 0 ){
                             <input type='text' class='form-control' id='mobile_no_1' value='{$row["mobile_no_1"]}'> 
                         </div>
                     </div>
-                   
-                    
-                </div>
-                <div class='row'>
                     <div class='col-md-3'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Mobile No 2</label> 
                             <input type='text' class='form-control' id='mobile_no_2' value='{$row["mobile_no_2"]}'> 
                         </div>
                     </div>
-                    <div class='col-md-3'>
-                        <div class='form-group'> 
-                            <label for='field-6' class='control-label'>Missing Documents</label> 
-                            <br>
-                            ";
-
-                            if($row['docs_missing']=='Yes'){
-
-                                $output.="
-
-                                    <input type='checkbox' name='missing' value='NO' id='docs_missing'> No Documents Missing ?
-
-                                ";
-                            }else{
-
-                                
-                                $output.="
-                                    <input type='checkbox' name='missing' value='Yes' id='docs_missing'> Any Documents Missing ?
-                                ";
-
-                            }
-                            $output.="
-
-                            <input type='text' class='form-control' id='missing_documents' value='{$row["missing_documents"]}'> 
-                        </div>
-                    </div>
-
-                    <div class='col-md-3'>
-                        <div class='form-group'> 
-                            <label for='field-6' class='control-label'>Passport Returned</label> 
-                            <br>
-                            ";
-
-                            if($row['passport_returned']=='Yes'){
-
-                                $output.="
-
-                                    <input type='checkbox' name='passport_returned' value='No' id='passport_returned' checked> Have you returned Passport ?
-
-                                ";
-                            }else{
-
-                                
-                                $output.="
-                                    <input type='checkbox' name='passport_returned' value='Yes' id='passport_returned'> Have you returned Passport ?
-                                ";
-
-                            }
-                            $output.="
-
-                            <input type='text' class='form-control' id='passport_returned_description' value='{$row["passport_returned_description"]}'> 
-
-                            <label for='field-6' class='passport-returned-date-label'>Passport Returned Date</label> 
-                            <input type='date' class='passport-returned-date form-control' id='passport_returned_date' value='{$row["passport_returned_date"]}'>
-                        </div>
-                    </div>
-
-                    
                     ";
 
                     $country_list=mysqli_query($con,"select country_name from country");
 
                     $output.="
-
                     <div class='col-md-3'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Country</label> 
                             <select name='' id='country' class='form-control'>
-                            
                              ";
 
                                 if(!empty($row["country"])){
@@ -242,7 +202,64 @@ if(mysqli_num_rows($result) > 0 ){
                             </select>
                         </div>
                     </div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-3'>
+                        <div class='form-group'> 
+                            <label for='field-6' class='control-label'>Missing Documents</label> 
+                            ";
 
+                            if($row['docs_missing']=='Yes'){
+
+                                $output.="
+
+                                    <input type='checkbox' name='missing' value='NO' id='docs_missing'> No Documents Missing ?
+
+                                ";
+                            }else{
+
+                                
+                                $output.="
+                                    <input type='checkbox' name='missing' value='Yes' id='docs_missing'> Any Documents Missing ?
+                                ";
+
+                            }
+                            $output.="
+
+                            <input type='text' class='form-control' id='missing_documents' value='{$row["missing_documents"]}'> 
+                        </div>
+                    </div>
+
+                    <div class='col-md-3'>
+                        <div class='form-group'> 
+                            <label for='field-6' class='control-label'>Passport Returned</label> 
+                            ";
+
+                            if($row['passport_returned']=='Yes'){
+
+                                $output.="
+
+                                    <input type='checkbox' name='passport_returned' value='No' id='passport_returned' checked> Have you returned Passport ?
+
+                                ";
+                            }else{
+
+                                
+                                $output.="
+                                    <input type='checkbox' name='passport_returned' value='Yes' id='passport_returned'> Have you returned Passport ?
+                                ";
+
+                            }
+                            $output.="
+
+                            <input type='text' class='form-control' id='passport_returned_description' value='{$row["passport_returned_description"]}'> 
+
+                            <label for='field-6' class='passport-returned-date-label'>Passport Returned Date</label> 
+                            <input type='date' class='passport-returned-date form-control' id='passport_returned_date' value='{$row["passport_returned_date"]}'>
+                        </div>
+                    </div>
+                </div>
+                <div class='row'>
                     <div class='col-md-3'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Apply Date</label> 
@@ -437,9 +454,6 @@ if(mysqli_num_rows($result) > 0 ){
                         
                     }
                     
-                    $company_list=mysqli_query($con,"select * from company_list");
-                    
-                    
                     $output.="
                     
                     <div class='col-md-3 text-center'>
@@ -464,14 +478,7 @@ if(mysqli_num_rows($result) > 0 ){
                             }
                             
                             
-                            while($comp_name = mysqli_fetch_assoc($company_list)){
-                                
-                                $output.="
-                                    <option value='{$comp_name["company_name"]}'>{$comp_name["company_name"]}</option>
-                                    
-                                ";
-                                
-                            }
+                            $output .= $_SESSION['dh_company_options'];
                             
 
                                
@@ -489,9 +496,6 @@ if(mysqli_num_rows($result) > 0 ){
                     //         <input type='text' class='form-control' value='{$check_company["company_name"]}' id='company_name' value=''> 
                     //     </div>
                     // </div>
-                    
-                    $trade_list=mysqli_query($con,"select * from trade");
-                    
                     
                     $output.="
                     
@@ -517,15 +521,7 @@ if(mysqli_num_rows($result) > 0 ){
                             }
                             
                             
-                            while($trade_name = mysqli_fetch_assoc($trade_list)){
-                                
-                                $output.="
-                                
-                                    <option value='{$trade_name['trade']}'>{$trade_name['trade']}</option>
-                                    
-                                ";
-                                
-                            }
+                            $output .= $_SESSION['dh_trade_options'];
 
                                
 
@@ -545,6 +541,7 @@ if(mysqli_num_rows($result) > 0 ){
                     // </div>
                     
                     $misc_val = htmlspecialchars($check_company["miscellaneous"] ?? '', ENT_QUOTES);
+                    $comments_val = htmlspecialchars($row["comments"] ?? '', ENT_QUOTES);
                     $output.="
               
                  
@@ -554,20 +551,10 @@ if(mysqli_num_rows($result) > 0 ){
                             <input type='text' class='form-control' value='{$misc_val}' id='miscellaneous'> 
                         </div>
                     </div>
-                    
-                    
-                    
-                    <div class='col-md-3'>
-                        
-                    </div>
-                    
-                    
-                    <div class='col-md-3'>
+                    <div class='col-md-6'>
                         <div class='form-group'> 
                             <label for='field-6' class='control-label'>Comments (Optional)</label> 
-                            <textarea id='comments' name='comments' rows='3' cols='40' value='{$row["comments"]}'>
-                                
-                            </textarea>
+                            <textarea class='form-control' id='comments' name='comments' rows='3'>{$comments_val}</textarea>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 <?php
    include('database/db_connection.php');
    include('session.php');
+   session_write_close();
 
     $search_value = $_POST["search"];
 
@@ -8,19 +9,23 @@
     
     $sql = "
     SELECT 
-        new_case_details.*, 
-        company_info.company_name, 
-        company_info.trade
-    FROM 
-        new_case_details
-    LEFT JOIN 
-        company_info ON company_info.emp_id = new_case_details.id
+        n.*, 
+        c.company_name, 
+        c.trade
+    FROM new_case_details n
+    LEFT JOIN (
+        SELECT c1.emp_id, c1.company_name, c1.trade
+        FROM company_info c1
+        INNER JOIN (
+            SELECT emp_id, MIN(id) AS id FROM company_info GROUP BY emp_id
+        ) c2 ON c1.id = c2.id
+    ) c ON c.emp_id = n.id
     WHERE 
-        (new_case_details.name LIKE '%{$search_value}%'
-        OR new_case_details.pp_no LIKE '%{$search_value}%'
-        OR new_case_details.tracking_id LIKE '%{$search_value}%'
-        OR company_info.company_name LIKE '%{$search_value}%')
-        AND new_case_details.country = '$country';
+        (n.name LIKE '%{$search_value}%'
+        OR n.pp_no LIKE '%{$search_value}%'
+        OR n.tracking_id LIKE '%{$search_value}%'
+        OR c.company_name LIKE '%{$search_value}%')
+        AND n.country = '$country'
     ";
 
     $result = mysqli_query($con, $sql) or die("SQL Query Failed.");
