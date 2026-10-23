@@ -1,4 +1,4 @@
-﻿<?php
+<?php
     
     $conn = mysqli_connect("localhost", "dhothari_cms", "dhothari_cms", "dhothari_petty_cash");
     if (mysqli_connect_errno())

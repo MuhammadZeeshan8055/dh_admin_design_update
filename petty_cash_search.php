@@ -1,4 +1,4 @@
-﻿<?php
+<?php
     
     $conn = mysqli_connect("localhost","root","","petty_cash");
     if (mysqli_connect_errno())

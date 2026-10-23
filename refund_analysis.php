@@ -1,4 +1,4 @@
-﻿<?php
+<?php
     
     include('database/db_connection.php');
     include('session.php');
