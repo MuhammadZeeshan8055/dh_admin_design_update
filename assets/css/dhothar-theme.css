@@ -17,8 +17,8 @@
   --dh-surface: rgba(255, 255, 255, 0.72);
   --dh-surface-solid: #ffffff;
   --dh-border: rgba(0, 175, 235, 0.18);
-  --dh-text: #1a2b3c;
-  --dh-text-muted: #5a6f82;
+  --dh-text: #0f1f2e;
+  --dh-text-muted: #3d5366;
   --dh-sidebar-bg: rgba(255, 255, 255, 0.78);
   --dh-sidebar-text: #2c3e50;
   --dh-sidebar-hover: rgba(0, 175, 235, 0.1);
@@ -43,8 +43,8 @@
   --dh-surface: rgba(22, 36, 52, 0.72);
   --dh-surface-solid: #162434;
   --dh-border: rgba(86, 201, 246, 0.16);
-  --dh-text: #e8f1f8;
-  --dh-text-muted: #8fa3b5;
+  --dh-text: #f2f7fb;
+  --dh-text-muted: #b6c7d6;
   --dh-sidebar-bg: rgba(14, 24, 36, 0.88);
   --dh-sidebar-text: #d5e4ef;
   --dh-sidebar-hover: rgba(86, 201, 246, 0.12);
@@ -401,10 +401,18 @@ footer.main {
 }
 
 .marquee {
-  background: var(--dh-surface) !important;
-  border: 1px solid var(--dh-border);
+  background: #fff5f5 !important;
+  border: 1px solid rgba(185, 28, 28, 0.28);
   border-radius: 8px;
-  color: var(--dh-danger) !important;
+  color: #b91c1c !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+[data-theme="dark"] .marquee {
+  background: rgba(185, 28, 28, 0.22) !important;
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca !important;
 }
 
 /* Theme toggle */
@@ -665,13 +673,17 @@ table.datatable > thead > tr > th {
   background: rgba(0, 175, 235, 0.08) !important;
   color: var(--dh-text) !important;
   border-color: var(--dh-border) !important;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 table.table > tbody > tr > td,
 table.datatable > tbody > tr > td {
   border-color: var(--dh-border) !important;
   background: transparent !important;
+  color: var(--dh-text) !important;
+  font-size: 13.5px;
+  font-weight: 500;
 }
 
 table.table-bordered,
@@ -764,7 +776,8 @@ table.table-bordered > tbody > tr > td {
     radial-gradient(circle at 12% 0%, rgba(86, 201, 246, 0.18), transparent 27rem),
     radial-gradient(circle at 92% 2%, rgba(216, 186, 111, 0.16), transparent 25rem),
     linear-gradient(180deg, #eef8fd 0, #f7fafc 32rem, #f3f7f9 100%) !important;
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--dh-text);
 }
 
 [data-theme="dark"] .dh-dashboard {
@@ -943,10 +956,18 @@ table.table-bordered > tbody > tr > td {
 
 .dh-dashboard #payment-alert .marquee {
   padding: 8px 38px 8px 12px !important;
-  border: 1px solid rgba(216, 186, 111, 0.25);
+  border: 1px solid rgba(185, 28, 28, 0.28);
   border-radius: 10px;
-  background: rgba(255,255,255,.72) !important;
-  font-size: 12px !important;
+  background: #fff5f5 !important;
+  color: #b91c1c !important;
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .dh-dashboard #payment-alert .marquee {
+  background: rgba(185, 28, 28, 0.22) !important;
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca !important;
 }
 
 .dh-dashboard #dismiss-btn {
@@ -1131,8 +1152,10 @@ table.table-bordered > tbody > tr > td {
 
 .dh-dashboard .dh-panel-title {
   margin: 0 0 12px;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: -.01em;
+  color: var(--dh-text);
 }
 
 .dh-dashboard .form-control {
@@ -1140,7 +1163,9 @@ table.table-bordered > tbody > tr > td {
   padding: 8px 11px !important;
   border-color: rgba(35, 79, 104, .12) !important;
   border-radius: 9px !important;
-  font-size: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--dh-text) !important;
 }
 
 .dh-dashboard input[type="submit"].form-control {
@@ -2388,8 +2413,9 @@ body:not(.login-page) label,
 body:not(.login-page) .control-label {
   margin-bottom: 6px;
   color: var(--dh-text) !important;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 body:not(.login-page) .form-group {
@@ -2406,6 +2432,8 @@ body:not(.login-page) .select2-container-multi .select2-choices {
   border: 1px solid rgba(39, 83, 106, .14) !important;
   border-radius: 9px !important;
   box-shadow: none !important;
+  font-size: 13.5px;
+  font-weight: 500;
 }
 
 body:not(.login-page) textarea.form-control {
@@ -2430,7 +2458,7 @@ body:not(.login-page) .btn {
   padding: 8px 14px;
   border: 0 !important;
   border-radius: 9px !important;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   box-shadow: 0 6px 14px rgba(29, 65, 85, .10);
   transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
@@ -2491,12 +2519,13 @@ body:not(.login-page) table.datatable {
 
 body:not(.login-page) table.table > thead > tr > th,
 body:not(.login-page) table.datatable > thead > tr > th {
-  padding: 11px 10px !important;
-  color: rgba(255, 255, 255, .92) !important;
+  padding: 12px 11px !important;
+  color: #ffffff !important;
   background: linear-gradient(135deg, #254260, #176e91) !important;
   border-color: rgba(255, 255, 255, .08) !important;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -2512,17 +2541,21 @@ body:not(.login-page) table.datatable > thead > tr > th:last-child {
 
 body:not(.login-page) table.table > tbody > tr > td,
 body:not(.login-page) table.datatable > tbody > tr > td {
-  padding: 10px !important;
-  color: var(--dh-text) !important;
-  background: rgba(255, 255, 255, .38) !important;
+  padding: 11px 10px !important;
+  color: #0f1f2e !important;
+  background: rgba(255, 255, 255, .92) !important;
   border-color: var(--dh-border) !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
   vertical-align: middle;
 }
 
 [data-theme="dark"] body:not(.login-page) table.table > tbody > tr > td,
 [data-theme="dark"] body:not(.login-page) table.datatable > tbody > tr > td {
-  color: #e8f1f8 !important;
+  color: #f2f7fb !important;
   background: #162434 !important;
+  font-weight: 500;
 }
 
 body:not(.login-page) table.table > tbody > tr:nth-child(even) > td,
@@ -2534,7 +2567,7 @@ body:not(.login-page) table.datatable > tbody > tr:nth-child(even) > td {
    still shows through translucent cells, leaving light text almost invisible. */
 [data-theme="dark"] body:not(.login-page) table.dataTable > tbody > tr,
 [data-theme="dark"] body:not(.login-page) table.table > tbody > tr {
-  color: #e8f1f8 !important;
+  color: #f2f7fb !important;
   background-color: #162434 !important;
 }
 
@@ -2582,6 +2615,22 @@ body:not(.login-page) table.datatable > tbody > tr:hover > td {
   background: rgba(86, 201, 246, .10) !important;
 }
 
+body:not(.login-page) .dataTables_filter,
+body:not(.login-page) .dataTables_length,
+body:not(.login-page) .dataTables_info,
+body:not(.login-page) .dataTables_paginate {
+  color: var(--dh-text) !important;
+  font-size: 13px !important;
+  font-weight: 500;
+}
+
+body:not(.login-page) .dataTables_filter label,
+body:not(.login-page) .dataTables_length label {
+  color: var(--dh-text) !important;
+  font-size: 13px !important;
+  font-weight: 600;
+}
+
 body:not(.login-page) .dataTables_filter input,
 body:not(.login-page) .dataTables_length select {
   min-height: 34px;
@@ -2589,15 +2638,18 @@ body:not(.login-page) .dataTables_length select {
   background: var(--dh-surface-solid) !important;
   border: 1px solid var(--dh-border) !important;
   border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 body:not(.login-page) .pagination > li > a,
 body:not(.login-page) .pagination > li > span {
   margin: 0 2px;
-  color: var(--dh-text-muted) !important;
+  color: var(--dh-text) !important;
   background: var(--dh-surface-solid) !important;
   border: 1px solid var(--dh-border) !important;
   border-radius: 7px !important;
+  font-weight: 600;
 }
 
 body:not(.login-page) .pagination > .active > a,
@@ -2620,6 +2672,12 @@ body:not(.login-page) .modal-header {
   padding: 15px 18px;
   background: linear-gradient(135deg, #254260, #176e91) !important;
   border: 0 !important;
+  color:#fff !important;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+h5.modal-title {
+  color: #ffff;
 }
 
 body:not(.login-page) .modal-header h1,
@@ -2627,7 +2685,7 @@ body:not(.login-page) .modal-header h2,
 body:not(.login-page) .modal-header h3,
 body:not(.login-page) .modal-header h4,
 body:not(.login-page) .modal-header .close {
-  color: #fff !important;
+  color: black !important;
 }
 
 body:not(.login-page) .modal-body {
@@ -2652,15 +2710,20 @@ body:not(.login-page) .nav-tabs {
 }
 
 body:not(.login-page) .nav-tabs > li > a {
-  color: var(--dh-text-muted) !important;
+  color: var(--dh-text) !important;
   border: 0 !important;
   border-radius: 9px 9px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.78;
 }
 
 body:not(.login-page) .nav-tabs > li.active > a,
 body:not(.login-page) .nav-tabs > li > a:hover {
   color: var(--dh-text) !important;
   background: rgba(0, 175, 235, .09) !important;
+  opacity: 1;
+  font-weight: 700;
 }
 
 /* Shared dropdowns outside the dashboard body class */

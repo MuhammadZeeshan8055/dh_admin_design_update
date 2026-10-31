@@ -589,9 +589,10 @@ if (!is_array($final_payment_no_entered_cases)) {
             .marquee {
               width: 100%;
               overflow: hidden;
-              background: #fff;
-              color: red;
+              background: #fff5f5;
+              color: #b91c1c;
               font-size: 16px;
+              font-weight: 600;
               white-space: nowrap;
               box-sizing: border-box;
               padding: 5px 0;
