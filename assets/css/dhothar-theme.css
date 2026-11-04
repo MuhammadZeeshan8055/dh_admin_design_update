@@ -2596,7 +2596,9 @@ body:not(.login-page) table.datatable > tbody > tr:nth-child(even) > td {
   border-color: var(--dh-border) !important;
 }
 
-[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button {
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper button.dt-button,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper a.dt-button {
   color: #dcebf5 !important;
   background: #1b3043 !important;
   border-color: rgba(86, 201, 246, .24) !important;
@@ -2604,10 +2606,35 @@ body:not(.login-page) table.datatable > tbody > tr:nth-child(even) > td {
 }
 
 [data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button:hover,
-[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button:focus {
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button:focus,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper button.dt-button:hover,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper a.dt-button:hover {
   color: #fff !important;
   background: #23506a !important;
   border-color: rgba(86, 201, 246, .48) !important;
+}
+
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate a.paginate_button {
+  color: #dcebf5 !important;
+  background: #1b3043 !important;
+  border-color: rgba(86, 201, 246, .24) !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  color: #fff !important;
+  background: #23506a !important;
+  border-color: rgba(86, 201, 246, .48) !important;
+}
+
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+[data-theme="dark"] body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  color: #7f95a8 !important;
+  background: #162434 !important;
+  border-color: rgba(86, 201, 246, .12) !important;
 }
 
 body:not(.login-page) table.table > tbody > tr:hover > td,
@@ -2642,6 +2669,130 @@ body:not(.login-page) .dataTables_length select {
   font-weight: 500;
 }
 
+/* Export buttons (Copy / Excel / CSV / PDF) */
+body:not(.login-page) .dataTables_wrapper .dt-buttons {
+  float: left;
+  margin: 0 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button,
+body:not(.login-page) .dataTables_wrapper button.dt-button,
+body:not(.login-page) .dataTables_wrapper a.dt-button,
+body:not(.login-page) .dataTables_wrapper div.dt-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  margin: 0 !important;
+  padding: 7px 14px !important;
+  color: #1a3a4f !important;
+  background: #fff !important;
+  border: 1px solid rgba(0, 175, 235, 0.28) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 4px 10px rgba(29, 65, 85, 0.06) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button:hover,
+body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button:focus,
+body:not(.login-page) .dataTables_wrapper button.dt-button:hover,
+body:not(.login-page) .dataTables_wrapper a.dt-button:hover {
+  color: #fff !important;
+  background: linear-gradient(135deg, #00afeb, #2783ac) !important;
+  border-color: transparent !important;
+  filter: none;
+  transform: translateY(-1px);
+}
+
+body:not(.login-page) .dataTables_wrapper .dt-buttons .dt-button + .dt-button {
+  border-left: 1px solid rgba(0, 175, 235, 0.28) !important;
+}
+
+/* Pagination */
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate {
+  float: right;
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_info {
+  float: left;
+  padding-top: 18px !important;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button,
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate a.paginate_button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 34px;
+  margin: 0 !important;
+  padding: 6px 12px !important;
+  color: #1a3a4f !important;
+  background: #fff !important;
+  border: 1px solid rgba(0, 175, 235, 0.28) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 4px 10px rgba(29, 65, 85, 0.06) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate a.paginate_button:hover {
+  color: #fff !important;
+  background: linear-gradient(135deg, #00afeb, #2783ac) !important;
+  border-color: transparent !important;
+  transform: translateY(-1px);
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  color: #fff !important;
+  background: linear-gradient(135deg, #00afeb, #2783ac) !important;
+  border-color: transparent !important;
+  box-shadow: 0 6px 14px rgba(0, 175, 235, 0.25) !important;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  color: #8aa0b3 !important;
+  background: rgba(0, 175, 235, 0.04) !important;
+  border-color: rgba(0, 175, 235, 0.14) !important;
+  box-shadow: none !important;
+  cursor: default;
+  transform: none;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate span {
+  display: inline-flex;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+}
+
+body:not(.login-page) .dataTables_wrapper .dataTables_paginate span .paginate_button {
+  border-right: 1px solid rgba(0, 175, 235, 0.28) !important;
+}
+
 body:not(.login-page) .pagination > li > a,
 body:not(.login-page) .pagination > li > span {
   margin: 0 2px;
@@ -2656,6 +2807,15 @@ body:not(.login-page) .pagination > .active > a,
 body:not(.login-page) .pagination > .active > span {
   color: #fff !important;
   background: linear-gradient(135deg, #00afeb, #2783ac) !important;
+}
+
+/* Nested table inside dh-panel: avoid double card chrome */
+.dh-panel .dataTables_wrapper {
+  padding: 4px 0 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 /* Modals, alerts and tabs */

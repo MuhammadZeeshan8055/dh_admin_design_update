@@ -53,32 +53,33 @@ $thisyear_date 		= date('Y-01-01').'/'.date('Y-12-31');
 $lastyear_date 		= date('Y-01-01', strtotime(date('Y-01-01')."-1 year")).'/'.date('Y-12-31', strtotime(date('Y-12-31')."-1 year"));
 $alltime_date 		= '1969-12-31/'.date('Y-12-31');
   
-  
     
-if($_POST['date']==$today_date){
+if(!empty($_POST['date']) && $_POST['date']==$today_date){
 	$selectOption = "Today";
 }	
-if($_POST['date']==$yesterday_date){
+if(!empty($_POST['date']) && $_POST['date']==$yesterday_date){
 	$selectOption = "Yesterday";
 }	
-if($_POST['date']==$last7days_date){
+if(!empty($_POST['date']) && $_POST['date']==$last7days_date){
 	$selectOption = "Last 7 Days";
 }	
-if($_POST['date']==$thismonth_date){
+if(!empty($_POST['date']) && $_POST['date']==$thismonth_date){
 	$selectOption = "This Month";
 }	
-if($_POST['date']==$lastmonth_date){
+if(!empty($_POST['date']) && $_POST['date']==$lastmonth_date){
 	$selectOption = "Last Month";
 }	
-if($_POST['date']==$thisyear_date){
+if(!empty($_POST['date']) && $_POST['date']==$thisyear_date){
 	$selectOption = "This Year";
 }	
-if($_POST['date']==$lastyear_date){
+if(!empty($_POST['date']) && $_POST['date']==$lastyear_date){
 	$selectOption = "Last Year";
 }	
-if($_POST['date']==$alltime_date){
+if(!empty($_POST['date']) && $_POST['date']==$alltime_date){
 	$selectOption = "All Time";
 }
+
+$date_label = !empty($selectOption) ? $selectOption : ((!empty($date1) && !empty($date2)) ? ($date1 . ' → ' . $date2) : 'Selected range');
  
 ?>
 <!DOCTYPE html> 
@@ -93,42 +94,18 @@ if($_POST['date']==$alltime_date){
       <meta name="description" content="Dhothar International" />
       <meta name="author" content="Laborator.co" />
       <link rel="icon" href="assets/images/favicon.ico">
-      <title>Dhothar International | Dashboard</title>
+      <title>Dhothar International | Search Dashboard</title>
       <link rel="stylesheet" href="assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css" id="style-resource-1">
       <link rel="stylesheet" href="assets/css/font-icons/entypo/css/entypo.css" id="style-resource-2">
-      <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic" id="style-resource-3">
       <link rel="stylesheet" href="assets/css/bootstrap.css" id="style-resource-4">
+      <!-- neon-core kept for sidebar layout/scripts compatibility; visual theme is dhothar-theme via custom.css -->
       <link rel="stylesheet" href="assets/css/neon-core.css" id="style-resource-5">
-      <link rel="stylesheet" href="assets/css/neon-theme.css" id="style-resource-6">
-      <link rel="stylesheet" href="assets/css/neon-forms.css" id="style-resource-7">
       <link rel="stylesheet" href="assets/css/custom.css" id="style-resource-8">
-      <style>
-            .card.radius-10.overflow-hidden.w-100 {
-               padding: 10px 10px 10px 10px;
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-red{
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-aqua {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-            .tile-stats.tile-blue {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-             .tile-stats.tile-green {
-               box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            }
-               .table-1{
-               width: 100%;
-            }
-            .table-2{
-               width: 100%;
-            }
-      </style>
+      <link rel="stylesheet" href="assets/js/datatables/datatables.css">
+      <?php include('components/theme_head.php'); ?>
       <script src="assets/js/jquery-1.11.3.min.js"></script> 
    </head>
-   <body class="">
+   <body class="dh-dashboard">
       <div class="page-container">
          <div class="sidebar-menu">
             <?php include('components/sidebar.php'); ?>
@@ -137,13 +114,19 @@ if($_POST['date']==$alltime_date){
 
            <?php include('components/header.php'); ?>
 
-            <hr/>
+            <div class="dh-dash-welcome dh-animate">
+               <div>
+                  <span class="dh-brand">Dhothar</span>
+                  <h1>Search results<?php echo !empty($firstname) ? ', ' . htmlspecialchars($firstname) : ''; ?></h1>
+                  <p>Case stats for <?php echo htmlspecialchars($_SESSION['country']); ?> — <?php echo htmlspecialchars($date_label); ?>.</p>
+               </div>
+            </div>
 
             <?php
                if($country=='' || $country=='Romania'){
             ?>
 
-               <div class="row">
+               <div class="row dh-stat-grid dh-animate dh-animate-delay-1">
                   <div class="col-sm-4 col-xs-6">
                       <a href="total_registered_cases?date1=<?=$date1?>&date2=<?=$date2?>"> 
                         <div class="tile-stats tile-green">
@@ -153,7 +136,7 @@ if($_POST['date']==$alltime_date){
                               $count_total_records=mysqli_fetch_assoc(mysqli_query($con,"select count(id) as total_records from new_case_details where entry_date between '$date1' and '$date2' and country='$_SESSION[country]'"));
                            ?>
 
-                           <div class="num" data-start="0" data-end="<?=$count_total_records['total_records'];?>" data-postfix data-duration="1500" data-delay="0">0</div>
+                           <div class="num" data-start="0" data-end="<?=$count_total_records['total_records'];?>" data-postfix data-duration="500" data-delay="0">0</div>
                            <h3>Total Registered Cases</h3>
                            
                         </div>
@@ -167,14 +150,13 @@ if($_POST['date']==$alltime_date){
                            <?php 
                               $ready_to_apply=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as ready_to_apply from new_case_details where status='Ready To Apply' and docs_missing!='Yes' and country='$_SESSION[country]' and status_updated_at between '$date1' and '$date2'"));
                            ?>
-                           <div class="num" data-start="0" data-end="<?=$ready_to_apply['ready_to_apply'];?>" data-postfix data-duration="1500" data-delay="600">0</div>
+                           <div class="num" data-start="0" data-end="<?=$ready_to_apply['ready_to_apply'];?>" data-postfix data-duration="500" data-delay="600">0</div>
                            <h3>Ready To Apply</h3>
                            
                         </div>
 
                      </a>
                   </div>
-                  <div class="clear visible-xs"></div>
                   <div class="col-sm-4 col-xs-6">
                      <a href="status_wise_data?status=Applied&date1=<?=$date1?>&date2=<?=$date2?>">
 
@@ -184,7 +166,7 @@ if($_POST['date']==$alltime_date){
                               $applied=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as applied from new_case_details where status='Applied' and country='$_SESSION[country]' 
                                           AND docs_missing != 'Yes' and status_updated_at between '$date1' and '$date2'"));
                            ?>
-                           <div class="num" data-start="0" data-end="<?=$applied['applied'];?>" data-postfix data-duration="1500" data-delay="1200">0</div>
+                           <div class="num" data-start="0" data-end="<?=$applied['applied'];?>" data-postfix data-duration="500" data-delay="1200">0</div>
                            <h3>Applied</h3>
                            
                         </div>
@@ -199,7 +181,7 @@ if($_POST['date']==$alltime_date){
                               $waiting_for_appointments = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Work Permit Issued' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly') AND status_updated_at BETWEEN '$date1' AND '$date2'"));
                         ?>
                         <div class="icon"><i class="entypo-rss"></i></div>
-                        <div class="num" data-start="0" data-end="<?=$work_permit_issued['work_permit_issued'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                        <div class="num" data-start="0" data-end="<?=$work_permit_issued['work_permit_issued'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                         <h3>Work Permit Issued
                               <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=<?= urlencode('Work Permit Issued') ?>&date1=<?=$date1?>&date2=<?=$date2?>';" style="font-size:1.1rem; display:block; margin-top:5px; cursor:pointer;">
                                  Waiting For Appointment (<?=$waiting_for_appointments['waiting_for_appointments'];?>)
@@ -208,19 +190,19 @@ if($_POST['date']==$alltime_date){
                      </div>
                   </div>
                   <div class="col-sm-4 col-xs-6">
-                     <a href="status_wise_data?status=Appointment Applied&date1=<?=$date1?>&date2=<?=$date2?>">
-
-                        <div class="tile-stats tile-aqua">
-                           <?php 
+                     <div class="tile-stats tile-aqua" onclick="window.location='status_wise_data?status=<?= urlencode('Appointment Applied') ?>&date1=<?=$date1?>&date2=<?=$date2?>'" style="cursor:pointer">
+                        <?php 
                               $appointment_applied=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as appointment_applied from new_case_details where status='Appointment Applied' and country='$_SESSION[country]' and status_updated_at between '$date1' and '$date2'"));
-                           ?>
-                           <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$appointment_applied['appointment_applied'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
-                           <h3>Appointment Applied</h3>
-                           
-                        </div>
-
-                     </a>
+                              $waiting_for_appointments_aa = mysqli_fetch_assoc(mysqli_query($con, "SELECT COUNT(id) AS waiting_for_appointments FROM new_case_details WHERE status='Appointment Applied' AND (appointment_date IS NULL OR appointment_date = '') AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly') AND status_updated_at BETWEEN '$date1' AND '$date2'"));
+                        ?>
+                        <div class="icon"><i class="entypo-rss"></i></div>
+                        <div class="num" data-start="0" data-end="<?=$appointment_applied['appointment_applied'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
+                        <h3>Appointment Applied
+                           <span onclick="event.stopPropagation(); window.location='waiting_for_appointments?status=<?= urlencode('Appointment Applied') ?>&date1=<?=$date1?>&date2=<?=$date2?>';" style="font-size:1.1rem; display:block; margin-top:5px; cursor:pointer;">
+                              Waiting For Appointment (<?=$waiting_for_appointments_aa['waiting_for_appointments'];?>)
+                           </span>
+                        </h3>
+                     </div>
                   </div>
                   <div class="col-sm-4 col-xs-6">
                      <a href="status_wise_data?status=Visa Issued&date1=<?=$date1?>&date2=<?=$date2?>">
@@ -228,11 +210,10 @@ if($_POST['date']==$alltime_date){
                         <div class="tile-stats tile-blue">
                            <?php 
                               $sql = "select status,count(id) as visa_issued from new_case_details where status='Visa Issued' and country='$_SESSION[country]' and status_updated_at between '$date1' and '$date2'";
-                            //   echo $sql;
                               $visa_issued=mysqli_fetch_assoc(mysqli_query($con,$sql));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$visa_issued['visa_issued'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$visa_issued['visa_issued'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Visa Issued</h3>
                            
                         </div>
@@ -262,7 +243,7 @@ if($_POST['date']==$alltime_date){
                               $fly=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as fly from new_case_details where status='Fly' and status_updated_at between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$fly['fly'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$fly['fly'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Departed</h3>
                            
                         </div>
@@ -277,7 +258,7 @@ if($_POST['date']==$alltime_date){
                               $returned=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as returned from new_case_details where (status='Returned' or status='Request Returned') and country='$_SESSION[country]' and status_updated_at between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$returned['returned'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$returned['returned'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Returned</h3>
                            
                         </div>
@@ -293,7 +274,7 @@ if($_POST['date']==$alltime_date){
                               $missing_documents=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as missing_documents from new_case_details where docs_missing='Yes' and country='$_SESSION[country]'  AND status NOT IN ('Returned', 'Fly') and status_updated_at between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$missing_documents['missing_documents'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$missing_documents['missing_documents'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Missing Documents</h3>
                            
                         </div>
@@ -311,7 +292,7 @@ if($_POST['date']==$alltime_date){
                                  and country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$passport_expiry_under_year['passport_expiry_under_year'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$passport_expiry_under_year['passport_expiry_under_year'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>PP EXPIRY UNDER 1 YEAR</h3>
                            
                         </div>
@@ -327,7 +308,7 @@ if($_POST['date']==$alltime_date){
                               $passport_expired=mysqli_fetch_assoc(mysqli_query($con,"SELECT count(id) as passport_expired FROM new_case_details WHERE pp_expiry < CURDATE() and country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$passport_expired['passport_expired'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$passport_expired['passport_expired'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>EXPIRED PASSPORTS</h3>
                            
                         </div>
@@ -340,8 +321,6 @@ if($_POST['date']==$alltime_date){
                      
                         <div class="tile-stats tile-red">
                            <?php 
-                                //   $character_expiry=mysqli_fetch_assoc(mysqli_query($con,"SELECT COUNT(id) AS first_character_expiry_count FROM new_case_details WHERE first_character_expiry >= DATE_SUB(CURDATE(), INTERVAL 180 DAY) AND first_character_expiry < CURDATE() AND country='$_SESSION[country]' AND status NOT IN ('Returned', 'Fly')"));
-                                  
                                   $character_expiry=mysqli_fetch_assoc(mysqli_query($con,"SELECT COUNT(id) AS expiry_count
                                         FROM new_case_details
                                         WHERE 
@@ -367,7 +346,7 @@ if($_POST['date']==$alltime_date){
                                         "));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$character_expiry['expiry_count'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$character_expiry['expiry_count'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Character Expiry</h3>
                            
                         </div>
@@ -381,7 +360,6 @@ if($_POST['date']==$alltime_date){
                            <div class="icon"><i class="entypo-chart-bar"></i></div>
                            <?php 
                               $temporary_return_passports=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as temporary_return_passports from new_case_details where passport_returned = 'Yes' AND status NOT IN ('Returned', 'Fly') OR status IS NULL and country='$_SESSION[country]' and status_updated_at between '$date1' and '$date2'"));
-                              // pr("select status,count(id) as temporary_return_passports from new_case_details where passport_returned = 'Yes' AND status NOT IN ('Returned', 'Fly') and country='$_SESSION[country]'");
                            ?>
                            <div class="num" data-start="0" data-end="<?=$temporary_return_passports['temporary_return_passports'];?>" data-postfix data-duration="500" data-delay="600">0</div>
                            <h3>Temporary Passport Returns</h3>
@@ -393,22 +371,17 @@ if($_POST['date']==$alltime_date){
 
                </div>
 
-               <hr>
-                 <br>
-                <br>
-                
-                	<div class="row">
+               <div class="row dh-animate dh-animate-delay-2">
         				<div class="col-12 col-lg-6 col-xl-6 d-flex" >
-    					   	<div class="card radius-10 overflow-hidden w-100">
+    					   	<div class="card radius-10 overflow-hidden w-100 dh-panel">
     						  <div class="card-body">
-    							<div class="d-flex align-items-center">
+                                 <h6 class="dh-panel-title">Quick date filter</h6>
     								 <form action="index_search" method="post">
-                    
                                           <table class="table-1">
                                                 <tr>
                                                     <td><select class='form-control' name="date"  required >
-                                            				<?php if($_POST['date']){?>
-                                            					<option value="<?= $_POST['date']; ?>"><?= $selectOption; ?></option>
+                                            				<?php if(!empty($_POST['date'])){?>
+                                            					<option value="<?= htmlspecialchars($_POST['date']); ?>"><?= htmlspecialchars($selectOption ?? $_POST['date']); ?></option>
                                             				<?php }else{ ?>
                                             					<option value=''>Select</option>
                                             				<?php } ?>
@@ -422,428 +395,382 @@ if($_POST['date']==$alltime_date){
                                             					<option value="<?= $alltime_date; ?>">All Time</option>
                                             				</select>
     				                                    </td>
-                                                     <td>   <input type="submit" name="date_select" value="search" id="" class="form-control">
-                                
+                                                     <td>   <input type="submit" name="date_select" value="Search" class="form-control">
                                                       </td>
                                                 </tr>
                                           </table>
-                    
-                                 
                                     </form>
-                        
-                            	</div>
                               </div>
     						</div>
     					</div>
     					
     					<div class="col-12 col-lg-6 col-xl-6 d-flex">
-    					   <div class="card radius-10 overflow-hidden w-100" >
+    					   <div class="card radius-10 overflow-hidden w-100 dh-panel" >
     						  <div class="card-body">
-    							<div class="d-flex align-items-center">
-    								 
-                     
+                                 <h6 class="dh-panel-title">Custom date range</h6>
                                              <form action="index_search" method="post">
-                                            
                                               <table class="table-2">
                                                 <tr>
-                                                    <td> <input type='date' name='date1' class='form-control' value="<?= $_POST['date1'] ?? ''; ?>"   />
+                                                    <td> <input type='date' name='date1' class='form-control' value="<?= !empty($_POST['date1']) ? htmlspecialchars($_POST['date1']) : '' ?>"   />
     				                                    </td>
-                                                     <td>   <input type='date' name='date2' class='form-control' value="<?= $_POST['date2'] ?? ''; ?>"   />
-                                
+                                                     <td>   <input type='date' name='date2' class='form-control' value="<?= !empty($_POST['date2']) ? htmlspecialchars($_POST['date2']) : '' ?>"   />
                                                       </td>
                                                       <td>
-                                                          <input type="submit" name="date_range" value="search" id="" class="form-control">
-                                    
+                                                          <input type="submit" name="date_range" value="Search" class="form-control">
                                                       </td>
                                                 </tr>
                                           </table>
-                                          
-                                         
-                                           
-                                              <!--<input type='date' name='date1' class='form-control' value="<?= $_POST['date1']; ?>"   />-->
-                                              <!--  	<input type='date' name='date2' class='form-control' value="<?= $_POST['date2']; ?>"   />-->
-                                              <!--  <input type="submit" name="date_range" value="search" id="" class="form-control">-->
-                                    
-                                            
-                                            
-                                            
                                             </form>
-                            	</div>
                               </div>
     						</div>
     					</div>
-					
 					</div>
-                
-                
-                <br>
-                <br>
-                
-                <hr>
-                
-                
-               <div class="row">
+
+               <div class="row dh-animate dh-animate-delay-3" style="margin-top:8px">
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Date Wise Entry Graph</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                                       
-                              <canvas id="myChart" ></canvas>	
+                              <h6 class="dh-panel-title">Date Wise Entry Graph</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                  
-                                 </script>
-      
+                              </div>
                      </div>
                   </div>
                
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef;">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Status Wise Data</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                        <div>
-                           
-                           <canvas id="myChart2"></canvas>
-                        </div>
-            
+                              <h6 class="dh-panel-title">Status Wise Data</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart2"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              <script>  // === include 'setup' then 'config' above ===
-                                    Chart.defaults.color = "white";
-                                 //   Chart.defaults.backgroundcolor = "re";
-                        
-                              const ctx = document.getElementById('myChart');
-                              const ctx2 = document.getElementById('myChart2');
-
-                              const myChart = new Chart(ctx, {
-                              type: 'line',
-                              data: {
-                                 labels:  [<?php while ($c = mysqli_fetch_array($exp_date_line)) {
-                                             echo '"' . $c['entry_date'] . '",';
-                                          } ?>],
-                                    datasets: [{
-                                    label: 'Entry by Date',
-                                    data: [<?php while ($d = mysqli_fetch_array($exp_amt_line)) {
-                                             echo '"' . $d['count(id)'] . '",';
-                                          } ?>],
-                                    borderColor: [
-                                       '#adb5bd'
-                                    ],
-                                    backgroundColor: [
-                                       '#6f42c1',
-                                       '#dc3545',
-                                       '#28a745',
-                                       '#007bff',
-                                       '#ffc107',
-                                       '#20c997',
-                                       '#17a2b8',
-                                       '#fd7e14',
-                                       '#e83e8c',
-                                       '#6610f2'
-                                    ],
-                                    fill: false,
-                                    borderWidth: 2
-                                    }]
-                              },
-                              });
-
-                              const myChart2 = new Chart(ctx2, {
-                              type: 'bar',
-                              data: {
-                                 labels: [<?php while ($a = mysqli_fetch_array($exp_category_dc)) {
-                                             echo '"' . $a['status'] . '",';
-                                          } ?>],
-                              datasets: [{
-                                    label: 'Status by Category',
-                                    data: [<?php while ($b = mysqli_fetch_array($exp_amt_dc)) {
-                                             echo '"' . $b['count(id)'] . '",';
-                                          } ?>],
-                                          
-                                 
-                                          backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                            'rgba(255, 205, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(201, 203, 207, 0.2)'
-                                                         ],
-                                                         borderColor: [
-                                                            'rgb(255, 99, 132)',
-                                                            'rgb(255, 159, 64)',
-                                                            'rgb(255, 205, 86)',
-                                                            'rgb(75, 192, 192)',
-                                                            'rgb(54, 162, 235)',
-                                                            'rgb(153, 102, 255)',
-                                                            'rgb(201, 203, 207)'
-                                                         ],
-                                                         borderWidth: 1
-                                    }]
-                              },
-                              });
-                              </script>						
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              
+                              </div>
                      </div>
                   </div>
 				   </div><!--End Row-->
+               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+               <script>
+               (function () {
+                  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                  var textColor = isDark ? '#a8bdd0' : '#5a6f82';
+                  Chart.defaults.color = textColor;
+                  var ctx = document.getElementById('myChart');
+                  var ctx2 = document.getElementById('myChart2');
+                  if (!ctx || !ctx2) return;
+
+                  new Chart(ctx, {
+                     type: 'line',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_date_line, 0);
+                           while ($c = mysqli_fetch_array($exp_date_line)) {
+                              echo '"' . $c['entry_date'] . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Entry by Date',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_line, 0);
+                              while ($d = mysqli_fetch_array($exp_amt_line)) {
+                                 echo '"' . $d['count(id)'] . '",';
+                              }
+                           ?>],
+                           borderColor: '#00afeb',
+                           backgroundColor: 'rgba(86, 201, 246, 0.25)',
+                           pointBackgroundColor: '#d8ba6f',
+                           pointBorderColor: '#00afeb',
+                           fill: true,
+                           tension: 0.35,
+                           borderWidth: 2
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: { legend: { display: true } },
+                        scales: {
+                           x: { grid: { color: 'rgba(0,175,235,0.08)' } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+
+                  new Chart(ctx2, {
+                     type: 'bar',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_category_dc, 0);
+                           while ($a = mysqli_fetch_array($exp_category_dc)) {
+                              echo '"' . addslashes($a['status']) . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Status by Category',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_dc, 0);
+                              while ($b = mysqli_fetch_array($exp_amt_dc)) {
+                                 echo '"' . $b['count(id)'] . '",';
+                              }
+                           ?>],
+                           backgroundColor: [
+                              'rgba(0, 175, 235, 0.55)',
+                              'rgba(216, 186, 111, 0.65)',
+                              'rgba(86, 201, 246, 0.55)',
+                              'rgba(229, 216, 171, 0.7)',
+                              'rgba(0, 175, 235, 0.4)',
+                              'rgba(216, 186, 111, 0.45)',
+                              'rgba(86, 201, 246, 0.4)'
+                           ],
+                           borderColor: ['#00afeb', '#d8ba6f', '#56c9f6', '#e5d8ab', '#00afeb', '#d8ba6f', '#56c9f6'],
+                           borderWidth: 1,
+                           borderRadius: 6
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                           x: { grid: { display: false } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+               })();
+               </script>
 
             <?php
                }else{
             ?>
 
-               <div class="row">
-                  
+               <div class="row dh-stat-grid dh-animate dh-animate-delay-1">
                   <div class="col-sm-4 col-xs-6">
-                     <div class="tile-stats tile-green">
-                        <div class="icon"><i class="entypo-users"></i></div>
+                      <a href="status_wise_data?status=Total Registered Cases&date1=<?=$date1?>&date2=<?=$date2?>"> 
+                        <div class="tile-stats tile-green">
+                           <div class="icon"><i class="entypo-users"></i></div>
 
-                        <?php 
-                           $count_total_records=mysqli_fetch_assoc(mysqli_query($con,"select count(id) as total_records from new_case_details where country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
-                        ?>
+                           <?php 
+                              $count_total_records=mysqli_fetch_assoc(mysqli_query($con,"select count(id) as total_records from new_case_details where country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
+                           ?>
 
-                        <div class="num" data-start="0" data-end="<?=$count_total_records['total_records'];?>" data-postfix data-duration="1500" data-delay="0">0</div>
-                        <h3>Registered Cases</h3>
-                     </div>
+                           <div class="num" data-start="0" data-end="<?=$count_total_records['total_records'];?>" data-postfix data-duration="500" data-delay="0">0</div>
+                           <h3>Total Registered Cases</h3>
+                           
+                        </div>
+                      </a> 
                   </div>
-                  <a href="status_wise_data?status=Ready To Apply">
-                     <div class="col-sm-4 col-xs-6">
+                  <div class="col-sm-4 col-xs-6">
+                     <a href="status_wise_data?status=Ready To Apply&date1=<?=$date1?>&date2=<?=$date2?>">
+
                         <div class="tile-stats tile-aqua">
                            <div class="icon"><i class="entypo-chart-bar"></i></div>
                            <?php 
                               $ready_to_apply=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as ready_to_apply from new_case_details where status='Ready To Apply' and country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
                            ?>
-                           <div class="num" data-start="0" data-end="<?=$ready_to_apply['ready_to_apply'];?>" data-postfix data-duration="1500" data-delay="600">0</div>
+                           <div class="num" data-start="0" data-end="<?=$ready_to_apply['ready_to_apply'];?>" data-postfix data-duration="500" data-delay="600">0</div>
                            <h3>Ready To Apply</h3>
                            
                         </div>
-                     </div>
-                  </a>
-                  <div class="clear visible-xs"></div>
-                  <a href="status_wise_data?status=Applied">
-                     <div class="col-sm-4 col-xs-6">
+
+                     </a>
+                  </div>
+                  <div class="col-sm-4 col-xs-6">
+                     <a href="status_wise_data?status=Applied&date1=<?=$date1?>&date2=<?=$date2?>">
+
                         <div class="tile-stats tile-blue">
                            <div class="icon"><i class="entypo-mail"></i></div>
                            <?php 
                               $applied=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as applied from new_case_details where status='Applied' and country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
                            ?>
-                           <div class="num" data-start="0" data-end="<?=$applied['applied'];?>" data-postfix data-duration="1500" data-delay="1200">0</div>
+                           <div class="num" data-start="0" data-end="<?=$applied['applied'];?>" data-postfix data-duration="500" data-delay="1200">0</div>
                            <h3>Applied</h3>
                            
                         </div>
-                     </div>
-                  </a>
-                  
-                  <a href="status_wise_data?status=Visa Issued">
-                     <div class="col-sm-4 col-xs-6">
+
+                     </a>
+                  </div>
+                  <div class="col-sm-4 col-xs-6">
+                     <a href="status_wise_data?status=Visa Issued&date1=<?=$date1?>&date2=<?=$date2?>">
+
                         <div class="tile-stats tile-blue">
                            <?php 
                               $visa_issued=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as visa_issued from new_case_details where status='Visa Issued' and country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$visa_issued['visa_issued'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$visa_issued['visa_issued'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Visa Issued</h3>
                            
                         </div>
-                     </div>
-                  </a>
 
-                  <a href="status_wise_data?status=Fly">
-                     <div class="col-sm-4 col-xs-6">
+                     </a>
+                  </div>
+                  <div class="col-sm-4 col-xs-6">
+                     <a href="status_wise_data?status=Fly&date1=<?=$date1?>&date2=<?=$date2?>">
+
                         <div class="tile-stats tile-green">
                            <?php 
                               $fly=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as fly from new_case_details where status='Fly' and country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$fly['fly'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
-                           <h3>Fly</h3>
+                           <div class="num" data-start="0" data-end="<?=$fly['fly'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
+                           <h3>Departed</h3>
                            
                         </div>
-                     </div>
-                  </a>
 
-                  <a href="status_wise_data?status=Returned">
-                     <div class="col-sm-4 col-xs-6">
+                     </a>
+                  </div>
+                  <div class="col-sm-4 col-xs-6">
+                     <a href="status_wise_data?status=Returned&date1=<?=$date1?>&date2=<?=$date2?>">
+                     
                         <div class="tile-stats tile-red">
                            <?php 
                               $returned=mysqli_fetch_assoc(mysqli_query($con,"select status,count(id) as returned from new_case_details where status='Returned' and country='$_SESSION[country]' and entry_date between '$date1' and '$date2'"));
                            ?>
                            <div class="icon"><i class="entypo-rss"></i></div>
-                           <div class="num" data-start="0" data-end="<?=$returned['returned'];?>" data-postfix data-duration="1500" data-delay="1800">0</div>
+                           <div class="num" data-start="0" data-end="<?=$returned['returned'];?>" data-postfix data-duration="500" data-delay="1800">0</div>
                            <h3>Returned</h3>
                            
                         </div>
-                     </div>
-                  </a>
+
+                     </a>
+                  </div>
                </div>
 
-               <hr>
-
-
-               <div class="row">
+               <div class="row dh-animate dh-animate-delay-3" style="margin-top:8px">
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Date Wise Entry Graph</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                                       
-                              <canvas id="myChart" ></canvas>	
+                              <h6 class="dh-panel-title">Date Wise Entry Graph</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                  
-                                 </script>
-      
+                              </div>
                      </div>
                   </div>
                
                   <div class="col-12 col-lg-6 col-xl-6 d-flex">
-                     <div class="card radius-10 overflow-hidden w-100" style="background:#00c0ef;">
+                     <div class="card radius-10 overflow-hidden w-100 dh-panel">
                      <div class="card-body">
-                        <div class="d-flex align-items-center">
-                           <div>
-                              <h6 class="mb-0">Status Wise Data</h6>
-                           </div>
-                           <div class="font-22 ms-auto text-white"><i class="bx bx-dots-horizontal-rounded"></i>
-                           </div>
-                        </div>
-                        <div>
-                           
-                           <canvas id="myChart2"></canvas>
-                        </div>
-            
+                              <h6 class="dh-panel-title">Status Wise Data</h6>
+                              <div class="dh-chart-wrap">
+                                 <canvas id="myChart2"></canvas>
                               </div>
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              <script>  // === include 'setup' then 'config' above ===
-                                    Chart.defaults.color = "white";
-                                 //   Chart.defaults.backgroundcolor = "re";
-                        
-                              const ctx = document.getElementById('myChart');
-                              const ctx2 = document.getElementById('myChart2');
-
-                              const myChart = new Chart(ctx, {
-                              type: 'line',
-                              data: {
-                                 labels:  [<?php while ($c = mysqli_fetch_array($exp_date_line)) {
-                                             echo '"' . $c['entry_date'] . '",';
-                                          } ?>],
-                                    datasets: [{
-                                    label: 'Expense by Date',
-                                    data: [<?php while ($d = mysqli_fetch_array($exp_amt_line)) {
-                                             echo '"' . $d['count(id)'] . '",';
-                                          } ?>],
-                                    borderColor: [
-                                       '#adb5bd'
-                                    ],
-                                    backgroundColor: [
-                                       '#6f42c1',
-                                       '#dc3545',
-                                       '#28a745',
-                                       '#007bff',
-                                       '#ffc107',
-                                       '#20c997',
-                                       '#17a2b8',
-                                       '#fd7e14',
-                                       '#e83e8c',
-                                       '#6610f2'
-                                    ],
-                                    fill: false,
-                                    borderWidth: 2
-                                    }]
-                              },
-                              });
-
-                              const myChart2 = new Chart(ctx2, {
-                              type: 'bar',
-                              data: {
-                                 labels: [<?php while ($a = mysqli_fetch_array($exp_category_dc)) {
-                                             echo '"' . $a['status'] . '",';
-                                          } ?>],
-                              datasets: [{
-                                    label: 'Expense by Category',
-                                    data: [<?php while ($b = mysqli_fetch_array($exp_amt_dc)) {
-                                             echo '"' . $b['count(id)'] . '",';
-                                          } ?>],
-                                          
-                                 
-                                          backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                            'rgba(255, 205, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(201, 203, 207, 0.2)'
-                                                         ],
-                                                         borderColor: [
-                                                            'rgb(255, 99, 132)',
-                                                            'rgb(255, 159, 64)',
-                                                            'rgb(255, 205, 86)',
-                                                            'rgb(75, 192, 192)',
-                                                            'rgb(54, 162, 235)',
-                                                            'rgb(153, 102, 255)',
-                                                            'rgb(201, 203, 207)'
-                                                         ],
-                                                         borderWidth: 1
-                                    }]
-                              },
-                              });
-                              </script>						
-                              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                              
+                              </div>
                      </div>
                   </div>
 				   </div><!--End Row-->
+               <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+               <script>
+               (function () {
+                  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                  Chart.defaults.color = isDark ? '#a8bdd0' : '#5a6f82';
+                  var ctx = document.getElementById('myChart');
+                  var ctx2 = document.getElementById('myChart2');
+                  if (!ctx || !ctx2) return;
+
+                  new Chart(ctx, {
+                     type: 'line',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_date_line, 0);
+                           while ($c = mysqli_fetch_array($exp_date_line)) {
+                              echo '"' . $c['entry_date'] . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Entry by Date',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_line, 0);
+                              while ($d = mysqli_fetch_array($exp_amt_line)) {
+                                 echo '"' . $d['count(id)'] . '",';
+                              }
+                           ?>],
+                           borderColor: '#00afeb',
+                           backgroundColor: 'rgba(86, 201, 246, 0.25)',
+                           pointBackgroundColor: '#d8ba6f',
+                           fill: true,
+                           tension: 0.35,
+                           borderWidth: 2
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        scales: {
+                           x: { grid: { color: 'rgba(0,175,235,0.08)' } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+
+                  new Chart(ctx2, {
+                     type: 'bar',
+                     data: {
+                        labels: [<?php
+                           mysqli_data_seek($exp_category_dc, 0);
+                           while ($a = mysqli_fetch_array($exp_category_dc)) {
+                              echo '"' . addslashes($a['status']) . '",';
+                           }
+                        ?>],
+                        datasets: [{
+                           label: 'Status by Category',
+                           data: [<?php
+                              mysqli_data_seek($exp_amt_dc, 0);
+                              while ($b = mysqli_fetch_array($exp_amt_dc)) {
+                                 echo '"' . $b['count(id)'] . '",';
+                              }
+                           ?>],
+                           backgroundColor: [
+                              'rgba(0, 175, 235, 0.55)',
+                              'rgba(216, 186, 111, 0.65)',
+                              'rgba(86, 201, 246, 0.55)',
+                              'rgba(229, 216, 171, 0.7)',
+                              'rgba(0, 175, 235, 0.4)',
+                              'rgba(216, 186, 111, 0.45)',
+                              'rgba(86, 201, 246, 0.4)'
+                           ],
+                           borderColor: ['#00afeb', '#d8ba6f', '#56c9f6', '#e5d8ab', '#00afeb', '#d8ba6f', '#56c9f6'],
+                           borderWidth: 1,
+                           borderRadius: 6
+                        }]
+                     },
+                     options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                           x: { grid: { display: false } },
+                           y: { grid: { color: 'rgba(0,175,235,0.08)' }, beginAtZero: true }
+                        }
+                     }
+                  });
+               })();
+               </script>
 
             <?php
                }
             ?> 
 
-            
-            <br/> 
-           
-            <div class="row">
-               <div class="col-md-12">
-                  <h3>Clients Data</h3>
-                  <br/> 
-                  <script type="text/javascript">
-                  jQuery( document ).ready( function( $ ) {
-                  var $table4 = jQuery( "#table-4" );
-                  $table4.DataTable( {
-                  dom: 'Bfrtip',
-                  buttons: [
-                  'copyHtml5',
-                  'excelHtml5',
-                  'csvHtml5',
-                  'pdfHtml5'
-                  ]
-                  } );
-
-
-               
-
-                  } );
-               </script> 
-               <table class="table table-bordered datatable table-3" id="table-4">
-               <thead>
-                  <tr>
+            <div class="row dh-animate" style="margin-top:16px">
+               <div class="col-xs-12 col-lg-12">
+                  <div class="card radius-10 overflow-hidden w-100 dh-panel">
+                     <div class="card-body">
+                        <h6 class="dh-panel-title">Clients Data</h6>
+                        <script type="text/javascript">
+                        jQuery( document ).ready( function( $ ) {
+                           var $table4 = jQuery( "#table-4" );
+                           $table4.DataTable( {
+                              dom: 'Bfrtip',
+                              buttons: [
+                                 'copyHtml5',
+                                 'excelHtml5',
+                                 'csvHtml5',
+                                 'pdfHtml5'
+                              ]
+                           } );
+                        } );
+                        </script> 
+                        <table class="table table-bordered datatable table-3" id="table-4">
+                           <thead>
+                              <tr>
                                  <th>Sno</th>
                                  <th>Name</th>
                                  <th>Father Name</th>
@@ -852,22 +779,14 @@ if($_POST['date']==$alltime_date){
                                  <th>Tracking Id</th>
                                  <th>Care of</th>
                                  <th>Status</th>
-										
-                  
-                     
-                  </tr>
-               </thead>
-               <tbody>
-                                 <?php
-												$subtotal=0;
-
-                                    $exp_fetched = mysqli_query($con, "SELECT name,fname,pp_no,pp_expiry,tracking_id,care_of,status FROM new_case_details where country='$_SESSION[country]' and entry_date between '$date1' and '$date2'");
-		
-												$count=1; 
-                                    while ($row = mysqli_fetch_array($exp_fetched)) { 
-
-																									
-											?>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <?php
+                                 $exp_fetched = mysqli_query($con, "SELECT name,fname,pp_no,pp_expiry,tracking_id,care_of,status FROM new_case_details where country='$_SESSION[country]' and entry_date between '$date1' and '$date2'");
+                                 $count=1; 
+                                 while ($row = mysqli_fetch_array($exp_fetched)) { 
+                              ?>
                               <tr>
                                     <td><?php echo $count++?></td>
                                     <td><?=$row['name']?></td>
@@ -879,38 +798,29 @@ if($_POST['date']==$alltime_date){
                                     <td>
                                        <?php
                                           if($row['status']=='Returned' || $row['status']=='Request Returned'){
-                                          
-                                             echo   $applied='<button class="btn btn-danger btn-sm">'.$row['status'].'</button>'.'<br>';
-                                             
+                                             echo '<button class="btn btn-danger btn-sm">'.$row['status'].'</button>';
                                           }else{
-                                             echo   $applied='<button class="btn btn-success btn-sm">'.$row['status'].'</button>'.'<br>';
-
+                                             echo '<button class="btn btn-success btn-sm">'.$row['status'].'</button>';
                                           }
                                        ?>
                                     </td>
-
-                                 
                               </tr>
-                  <?php
-                     }
-                  ?>
-               </tbody>
-               
-            </table>
+                              <?php
+                                 }
+                              ?>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
                </div>
-           </div>
-          
-           
-          
+            </div>
+
             <?php
                include('components/footer.php');
             ?>
          </div>
-        
-        
-        
       </div>
-     
+
       <script src="assets/js/datatables/datatables.js" id="script-resource-8"></script> 
 
       <!-- Sidebar / layout scripts -->
@@ -922,6 +832,6 @@ if($_POST['date']==$alltime_date){
       <script src="assets/js/neon-api.js"></script>
       <script src="assets/js/cookies.min.js"></script>
       <script src="assets/js/neon-custom.js"></script>
+     
    </body>
 </html>
-
